@@ -1,0 +1,15 @@
+% S34
+%
+% functions cannot be re-assigned as scalars
+
+begin
+	boolean why()
+	begin
+		result false
+	end
+	boolean a, b
+	a := true
+	b := false
+	why := a & b
+end
+	

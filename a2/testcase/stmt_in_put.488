@@ -1,0 +1,9 @@
+begin
+	proc foo(integer x)
+	begin
+		integer a
+		put "hello world ", x, a := 4, skip
+		result x	% I guess this is semantic error
+	end
+	foo(5)
+end

@@ -1,0 +1,111 @@
+CSC488/2107 Assignment 3
+Term: Winter 2013
+Group: c488h08
+
+
+Classes
+==========================================================================
+
+src/
+└── compiler488
+    ├── ast                               - Abstract Syntax Tree structure
+    │   ├── ASTLexicalOrderVisitor.java
+    │   ├── ASTList.java
+    │   ├── ASTNode.java
+    │   ├── ASTPrettyPrinter.java		  - Classes to print AST as code
+    │   ├── ASTPrinter488.java
+    │   ├── ASTPrinter488CPPShared.java
+    │   ├── ASTPrinterCPP.java
+    │   ├── ASTVisitor.java               - Visitor interface for AST
+    │   ├── ASTVisitorAdapter.java
+    │   ├── Cached.java
+    │   ├── FixedIterable.java
+    │   ├── IASTNodeCallback.java
+    │   ├── SemanticException.java
+    │   ├── decl                          - Declaration AST Nodes
+    │   │   ├── ArrayDeclaration.java
+    │   │   ├── Declaration.java
+    │   │   ├── ForwardDeclaration.java
+    │   │   ├── ParameterDeclaration.java
+    │   │   ├── RoutineDeclaration.java
+    │   │   └── VariableDeclaration.java
+    │   ├── expn                              - Expression AST Nodes
+    │   │   ├── Access.java
+    │   │   ├── AndOperator.java
+    │   │   ├── ArrayAccess.java
+    │   │   ├── BinaryArithmeticOperator.java
+    │   │   ├── BinaryBooleanOperator.java
+    │   │   ├── BinaryOperator.java
+    │   │   ├── BinaryOperators.java
+    │   │   ├── BoolConst.java
+    │   │   ├── ComparisonOperator.java
+    │   │   ├── Const.java
+    │   │   ├── DivisionOperator.java
+    │   │   ├── EqualOperator.java
+    │   │   ├── Expression.java
+    │   │   ├── FunctionInvocation.java
+    │   │   ├── GreaterEqualOperator.java
+    │   │   ├── GreaterOperator.java
+    │   │   ├── Identifier.java
+    │   │   ├── IntConst.java
+    │   │   ├── LessEqualOperator.java
+    │   │   ├── LessOperator.java
+    │   │   ├── MinusOperator.java
+    │   │   ├── MultiplicationOperator.java
+    │   │   ├── NotEqualOperator.java
+    │   │   ├── OrOperator.java
+    │   │   ├── PlusOperator.java
+    │   │   ├── StringConst.java
+    │   │   ├── UnaryMinus.java
+    │   │   ├── UnaryNot.java
+    │   │   ├── UnaryOperator.java
+    │   │   └── VariableAccess.java
+    │   ├── stmt                         - Statement AST Nodes
+    │   │   ├── Assignment.java
+    │   │   ├── ExitStatement.java
+    │   │   ├── GetInvocation.java
+    │   │   ├── IfStatement.java
+    │   │   ├── LoopStatement.java
+    │   │   ├── ProcedureInvocation.java
+    │   │   ├── PutInvocation.java
+    │   │   ├── ResultStatement.java
+    │   │   ├── ReturnStatement.java
+    │   │   ├── Scope.java
+    │   │   └── Statement.java
+    │   └── type                         - Symbol Types
+    │       ├── ArrayType.java
+    │       ├── BooleanType.java
+    │       ├── IntegerType.java
+    │       ├── RoutineType.java
+    │       └── Type.java
+    ├── compiler                        - Compiler framework/IO classes
+    │   ├── CompilerMain.java
+    │   ├── Console.java
+    │   ├── CppCompiler.java
+    │   ├── FileContainer.java
+    │   ├── OutputFileFormat.java
+    │   ├── ReportVerbosity.java
+    │   └── TraceModule.java
+    ├── parser                          - Parser generation
+    │   ├── Location.java
+    │   ├── Report.java
+    │   ├── SyntaxErrorException.java
+    │   ├── csc488.cup
+    │   └── csc488.flex
+    ├── runtime
+    │   ├── ExecutionException.java
+    │   ├── Machine.java
+    │   ├── MemoryAddressException.java
+    │   └── TextReader.java
+    ├── semantics
+    │   ├── SemanticASTVisitor.java - Base class for semantic check visitor
+    │   ├── SemanticError.java
+    │   ├── Semantics.java - Semantic checking module
+    │   ├── Semantics_*.java - Visitors that do semantic checks
+    ├── symbol
+    │   ├── SymbolEntry.java - A symbol entry
+    │   └── SymbolTable.java - A symbol table for one Scope
+    └── testing
+        └── TestSuite.java - Automated testing
+
+12 directories, 92 files

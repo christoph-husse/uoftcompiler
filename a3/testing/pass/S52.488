@@ -1,0 +1,12 @@
+% S52
+%
+% Check that return statement is inside a procedure
+
+begin
+    proc foo()
+    begin
+        return
+    end
+
+    foo()
+end

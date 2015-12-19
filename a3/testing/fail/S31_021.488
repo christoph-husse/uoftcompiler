@@ -1,0 +1,30 @@
+% S31
+%
+% Using booleans in various places where integers are expected
+% we expect 8 errors in total here
+
+begin
+	integer a, b, c
+	boolean yes
+	a := 5
+	if a < true
+	then
+		if true > false
+		then
+			b := a + true
+			c := ( 5 + 3 ) * yes
+		fi
+	else
+		if yes <= 6
+		then
+			b := a - false
+			c := true / a
+		fi
+	fi
+	
+	loop
+		exit when yes <= b
+		b := b + 5
+	pool
+end
+

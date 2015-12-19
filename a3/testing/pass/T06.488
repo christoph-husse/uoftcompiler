@@ -1,0 +1,15 @@
+% T06
+%
+% Testing S31
+
+begin
+	integer a
+	a := 5
+	if a < 6
+	then
+		put "yes"
+	else
+		put "no"
+	fi
+end
+

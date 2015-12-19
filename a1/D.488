@@ -1,0 +1,106 @@
+% Assignment 1 part D
+
+begin
+
+    %=============
+    % Declarations
+    %=============
+
+    integer proc4param3
+    boolean proc4param4
+
+    % Test forward declarations for functions/procedures
+    forward proc proc2(integer param1)
+    forward boolean func3(boolean param1)
+
+    %============
+    % Procedures
+    %============
+
+    % no parameters
+    proc proc1()
+        begin
+            put "proc1", skip
+        end
+
+    % integer parameter
+    proc proc2(integer param1)
+        begin
+            put "proc2", skip
+        end
+
+    % boolean parameter
+    proc proc3(boolean param1)
+        begin
+            put "proc3", skip
+        end
+
+    % multiple parameters
+    proc proc4(integer param1,
+               boolean param2,
+               integer param3,
+               boolean param4)
+        begin
+            put "proc4", skip
+        end
+
+    %===========
+    % Functions
+    %===========
+
+    % no parameter
+    integer func1()
+        begin
+            put "func1", skip
+            result 1
+        end
+
+    % integer parameter
+    integer func2(integer param1)
+        begin
+            put "func3 (input was ", param1, ")", skip
+            result param1
+        end
+
+    % boolean parameter
+    boolean func3(boolean param1)
+        begin
+            if param1 = true then
+                put "func3 (input was true)", skip
+            else
+                put "func3 (input was false)", skip
+            fi
+            result param1
+        end
+
+    % multiple parameter
+    integer func4(boolean param1,
+                  boolean param2,
+                  integer param3,
+                  integer param4)
+        begin
+            put "func4", skip
+            result param3
+        end
+
+    %============
+    % Test calls
+    %============
+
+    proc1()
+    proc2(1)
+    proc3(true)
+    proc4param3 := 2
+    proc4param4 := false
+    proc4(1, true, proc4param3, proc4param4)
+
+    func1()
+    put "Result of func2: ", func2(2), skip
+    if func3(true) then
+        put "Call succeeded", skip
+    else
+        put "Call failed", skip
+    fi
+    put "Result of func4: ", func4(true, false, 3, 4), skip
+
+end

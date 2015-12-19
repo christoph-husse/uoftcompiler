@@ -1,0 +1,9 @@
+% S37
+%
+% Checks that array variable cannot be used as a scalar
+
+begin
+	integer a[5], x
+	a := 3
+	x := a + 2
+end

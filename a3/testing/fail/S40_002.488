@@ -1,0 +1,17 @@
+% S40
+%
+% Check that identifier has been declared as a function
+
+begin
+    proc foo(integer a, integer b)
+    begin
+        return
+    end
+
+    integer x, y, z
+
+    x := 1
+    y := 2
+
+    z := foo(x, y)
+end

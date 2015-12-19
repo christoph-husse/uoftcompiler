@@ -1,0 +1,20 @@
+% S35
+%
+% Check that expression type matches the return type of enclosing function
+
+begin
+    integer a, b
+    boolean c, d
+
+    integer foo()
+    begin
+        result (c & d)
+    end
+
+    a := 1
+    b := 2
+    c := true
+    d := false
+
+    a := foo()
+end

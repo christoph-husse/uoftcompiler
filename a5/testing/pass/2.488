@@ -1,0 +1,10 @@
+begin
+    proc foo(integer x)
+    begin
+        return
+    end
+
+    integer a
+    a := 1
+    foo(a)
+end

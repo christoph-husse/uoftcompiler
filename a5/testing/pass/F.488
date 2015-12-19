@@ -1,0 +1,58 @@
+% F.488
+% 
+% Binary Search
+
+begin
+	integer a[10]
+	integer x
+	
+	a[1] := 5
+	a[2] := 7
+	a[3] := 11
+	a[4] := 13
+	a[5] := 16
+	a[6] := 17
+	a[7] := 20
+	a[8] := 25
+	a[9] := 27
+	a[10] := 31
+
+	x := 5
+	loop
+		put "Looking for ", x, "... ", skip
+		begin
+			integer top, bottom, idx
+			boolean found
+			found := false
+			top := 10
+			bottom := 1
+		
+			loop		
+				exit when top < bottom
+				idx := (top + bottom) / 2
+				put "  idx = ", idx, ", a[i] = ", a[idx], skip
+				if a[idx] = x then
+					found := true
+					exit
+				else
+					if a[idx] > x then
+						top := idx - 1
+					else
+						bottom := idx + 1
+					fi
+				fi
+			pool
+			
+			if found then
+				put "                      found!"
+			else
+				put "                      not found :("
+			fi
+			put skip, skip
+		end
+		x := x + 2
+		exit when x > a[10]
+	pool
+
+end
+

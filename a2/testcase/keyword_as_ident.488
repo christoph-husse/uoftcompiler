@@ -1,0 +1,10 @@
+begin
+	integer foo(integer x)
+	begin
+		integer pool % problem here
+		put "hello world ", x > 5, skip
+		result 3
+	end
+	integer a
+	foo(5)
+end

@@ -1,0 +1,6 @@
+/lib
+/src/compiler488/parser/Lexer.java
+/src/compiler488/parser/Parser.java
+/src/compiler488/parser/sym.java
+/bin/
+/dist/

@@ -1,0 +1,30 @@
+% S35
+%
+% Checks that functions should return the same type as what was declared
+% expecting 3 errors
+
+begin
+	integer x
+	integer fav(integer a)
+	begin
+		integer local
+		local := 2
+		result local > 5
+	end
+	boolean stuff()
+	begin
+		result 6
+	end
+	proc weird(integer a)
+	begin
+		result a
+	end
+	x := 2
+	if x < 3
+	then
+		stuff()
+	else
+		fav(x)
+	fi
+end
+	

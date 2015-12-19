@@ -1,0 +1,13 @@
+% S31
+%
+% Check that type of expression or variable is integer
+%
+% input:variable S31
+
+begin
+    boolean a
+
+    a := true
+
+    get a
+end

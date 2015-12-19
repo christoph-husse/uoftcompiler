@@ -1,0 +1,690 @@
+//
+// Package and import specifications section.
+
+package compiler488.parser;
+
+import java_cup.runtime.*;        // Must always import this.
+import compiler488.ast.*;
+import compiler488.parser.Location;
+import compiler488.ast.expn.*;
+import compiler488.ast.decl.*;
+import compiler488.ast.stmt.*;
+import compiler488.ast.type.*;
+
+/* User code components 1: action code components.
+* Code to be used inside the actions triggered when productions are matched.
+* If any common code is needed for more than one action , put it here.
+*/
+action code {:
+	private Location getLocation() 
+	{ 
+		return Location.begin(parser.prevSymbol).end(parser.currentSymbol); 
+	}
+:};
+
+/* User code components 2: parser code components. 
+* Modifications to the default generated parser
+*/
+parser code {:
+
+public java_cup.runtime.Symbol currentSymbol, prevSymbol;
+
+/** Override the report_error method so it will display the line and
+ * column of where the error occurred in the input as well as the
+ * reason for the error which is passed into the method in the
+ * String 'message'.
+ * @param message  error message to print
+ * @param info     symbol containing line/column numbers
+ */
+public void report_error(String message, Object info) {
+
+	if (info instanceof java_cup.runtime.Symbol) 
+	{			
+		java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+		Location loc = Location.begin(prevSymbol).end(s);
+		
+		String lineInfo = "in line ";
+		
+		lineInfo += loc.getLineNumber(Location.BEGIN);
+		lineInfo += ", column " + loc.getColumn(Location.BEGIN);
+		
+		Report.beginFatalError()
+				.print("[FATAL-ERROR]: Syntax error " + lineInfo + ".")
+				.indent(4)
+				.newLine()
+				.visualizeFile(loc.getFile())
+				.visualizeLocation(loc)
+				.submit();
+	}
+	else
+	{
+		Report.fatalError("[FATAL-ERROR]: Syntax error!");
+	}
+}
+
+/** Override the report_fatal_error method to use the report_error method. */
+/** @throws SyntaxErrorException                        */
+public void report_fatal_error (String message, Object info) throws SyntaxErrorException
+{
+	report_error (message, info);
+/*        throw new SyntaxErrorException (lastError); */
+}
+
+/** version string for printing version in Main */
+public static final String version =
+ " $Revision: 1.10 $ $Date: 2013/01/04 16:42:14 $Author: dw $" ;
+:};
+
+/* User code components 3: initialization code.
+* If you want some code to be executed before the parser asks for the first
+* token, add it here.
+*/
+init with {:
+:};
+
+/* User code components 4: scanner specification code.
+* If you need to override the way the parser asks the scanner for the
+* next token, put your preferred method here.  Uncomment the line following
+* this comment, replace the line after that with your code, and uncomment
+* the line after that.
+*/
+scan with {:
+	prevSymbol = currentSymbol;
+	return currentSymbol = getScanner().next_token();
+:};
+
+/* Symbol lists section.
+* The names of terminals and non-terminals are not allowed to be CUP
+* reserved words.  These include "code", "action", "parser", "terminal",
+* "non", "nonterminal", "init", "scan", "with", "start", "precedence",
+* "left", "right", "nonassoc", "import", and "package".
+*/
+
+// DEFINITIONS for CSC488S Source Language  Winter  2012/2013 
+
+// Terminals returned by the scanner with no value attached.  
+terminal     BOOLEAN,    INTEGER,    BEGIN        ;
+terminal    ELSE,    END,    EXIT,   FI,    FORWARD    ;
+terminal    IF,    GET,     LOOP,    POOL,    PROCEDURE,    PUT    ;
+terminal    RESULT,    RETURN,    SKIP,    THEN,    WHEN    ;
+
+// Special-character terminals, no value attached
+terminal    AND,    OR,    NOT,    TRUE,    FALSE    ;
+terminal    L_PAREN    ,R_PAREN,L_SQUARE, R_SQUARE     ;
+terminal    EQUAL,    GREATER,LESS,    COMMA,  DOT, COLON    ;
+terminal    PLUS,    MINUS,    TIMES,  DIVIDE    ;
+
+// Terminals returned by the scanner with a value.
+terminal String  IDENT    ;
+terminal Integer INTCONST    ;
+terminal String  TEXTCONST    ;
+
+// Non-terminals that have no value.
+// nonterminal xxx
+
+nonterminal program;
+nonterminal statement;
+nonterminal statements;
+nonterminal scope;
+nonterminal declaration;
+nonterminal declarations;
+nonterminal functionHead;
+nonterminal procedureHead;
+nonterminal variabledecls;
+nonterminal bound;
+
+nonterminal type;
+nonterminal output;
+nonterminal outputs;
+nonterminal input;
+
+nonterminal argumentList;
+nonterminal arguments;
+nonterminal parameterList;
+nonterminal parameters;
+nonterminal variable;
+nonterminal expression;
+
+nonterminal variabledecl;
+nonterminal identifier;
+
+// Symbols not in the original grammar.
+nonterminal and_op, not_op, compare_ops, add_minus, mult_divide, unary_not_minus, operand;
+
+// Non-terminals that have a value.
+// nonterminal type  nameList ;
+
+// CSC488S PLEASE NOTE: your grammar CAN NOT use the 'precedence'
+// feature of java-cup. The lines below should remain
+// commented.
+//
+//precedence left PLUS, MINUS;
+//precedence left TIMES, DIVIDE;        // Higher precedence.
+
+// The grammar section.
+
+
+// This specifies the initial symbol of the grammar.
+start with program;
+
+/* Notice that sometimes the action must be inside the production rule,
+* not after it.  This is a subtle yet significant difference from YACC.
+* This is because the CUP parser is looking ahead one token.  It ALWAYS
+* reads one more token before it will act on the production.
+*/
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// PROGRAM
+////////////////////////////////////////////////////////////////////////////
+program ::= 
+scope:scope 
+{: 
+	RESULT = scope; 
+:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// STATEMENTS
+////////////////////////////////////////////////////////////////////////////
+statements ::= 
+	statement:stmt 
+	{: 
+		RESULT = new ASTList<Statement>((Statement)stmt); 
+	:} |
+					
+	statements:list statement:stmt 
+	{: 
+		RESULT = ((ASTList<Statement>)list).addLast((Statement)stmt); 
+	:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// STATEMENT
+////////////////////////////////////////////////////////////////////////////
+statement ::= 
+	variable:dst COLON EQUAL:p expression:src 
+		{: 
+			RESULT = new Assignment(new Location().pivot(pleft, pright-2, pleft, pright), (Expression)dst, (Expression)src); 
+		:} |
+					
+	IF:lm expression:cond THEN statements:trueCase FI :rm
+		{: 
+			RESULT = new IfStatement(
+				Location.begin(lmleft, lmright).pivot(lmleft, lmright).end(rmleft, rmright, 2), 
+				(Expression)cond, 
+				new Scope(
+					((ASTList<Statement>)trueCase).getLocation(), 
+					(ASTList<Statement>)trueCase)
+			); 
+		:} |
+
+	IF:lm expression:cond THEN statements:trueCase ELSE statements:falseCase FI:rm 
+		{: 
+			RESULT = new IfStatement(
+				Location.begin(lmleft, lmright).pivot(lmleft, lmright).end(rmleft, rmright, 2), 
+				(Expression)cond, 
+				new Scope(
+					((ASTList<Statement>)trueCase).getLocation(), 
+					(ASTList<Statement>)trueCase), 
+				new Scope(
+					((ASTList<Statement>)falseCase).getLocation(), 
+					(ASTList<Statement>)falseCase)
+				); 
+		:} |
+
+	LOOP:lm statements:stmts POOL:rm
+		{: 
+			RESULT = new LoopStatement(
+				Location.begin(lmleft, lmright).pivot(lmleft, lmright).end(rmleft, rmright, 4), 
+				(ASTList<Statement>)stmts); 
+		:} |
+
+	EXIT:lm
+		{: 
+			RESULT = new ExitStatement(Location.begin(lmleft, lmright).end(lmleft, lmright, 4)); 
+		:} |
+
+	EXIT:lm INTCONST:value 
+		{: 
+			RESULT = new ExitStatement(Location.begin(lmleft, lmright).pivot(lmleft, lmright, 4), value); 
+		:} |
+
+	EXIT:lm WHEN expression:when 
+		{: 
+			RESULT = new ExitStatement(Location.begin(lmleft, lmright).pivot(lmleft, lmright, 4), (Expression)when); 
+		:} |
+
+	EXIT:lm INTCONST:level WHEN expression:when 
+		{: 
+			RESULT = new ExitStatement(Location.begin(lmleft, lmright).pivot(lmleft, lmright, 4), level, (Expression)when); 
+		:} |
+
+	RESULT:lm expression:expr 
+		{: 
+			RESULT = new ResultStatement(Location.begin(lmleft, lmright).pivot(lmleft, lmright, 6), (Expression)expr); 
+		:} |
+
+	RETURN:lm
+		{: 
+			RESULT = new ReturnStatement(Location.begin(lmleft, lmright).end(lmleft, lmright, 6)); 
+		:} |
+
+	PUT:lm outputs:output 
+		{: 
+			RESULT = new PutInvocation(Location.begin(lmleft, lmright).pivot(lmleft, lmright, 3), (ASTList<Expression>)output); 
+		:} |
+
+	GET:lm input:input 
+		{: 
+			RESULT = new GetInvocation(Location.begin(lmleft, lmright).pivot(lmleft, lmright, 3), (ASTList<VariableAccess>)input);
+		:} |
+	identifier:name argumentList:args 
+		{: 
+			RESULT = new ProcedureInvocation(new Location().pivot(name), (Identifier)name, (ASTList<Expression>)args);
+		:} |
+	scope:scope 
+		{: 
+			RESULT = scope;
+		:} ;
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// SCOPE
+////////////////////////////////////////////////////////////////////////////
+scope ::= 
+	BEGIN:lm declarations:decls statements:stmts END:rm
+		{: 
+			Location l = Location.begin(lmleft, lmright).pivot(lmleft, lmright, 5).end(rmleft, rmright, 3);
+			RESULT = new Scope(l, (ASTList<Declaration>)decls, (ASTList<Statement>)stmts);
+		:} |
+	
+	BEGIN:lm statements:stmts END:rm
+		{: 
+			Location l = Location.begin(lmleft, lmright).pivot(lmleft, lmright, 5).end(rmleft, rmright, 3);
+			RESULT = new Scope(l, (ASTList<Statement>)stmts);
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// DECLARATIONS
+////////////////////////////////////////////////////////////////////////////
+declarations ::= 
+	declaration:decls 
+		{: 
+			RESULT = new ASTList<Declaration>(getLocation()).addRange((ASTList<Declaration>)decls);
+		:} |
+	
+	declarations:list declaration:decls 
+		{: 
+			RESULT = ((ASTList<Declaration>)list).addRange((ASTList<Declaration>)decls);
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// DECLARATION
+////////////////////////////////////////////////////////////////////////////
+declaration ::= 
+	type:type variabledecls:decls 
+		{: 
+			RESULT = decls; 
+			for(VariableDeclaration d : (ASTList<VariableDeclaration>)decls)
+			{
+				d.setType((Type)type);
+			}
+		:} |
+		
+	functionHead:decl scope:body 
+		{: 
+			RESULT = new ASTList<Declaration>(((RoutineDeclaration)decl).setBody((Scope)body));
+		:} |
+		
+	procedureHead:decl scope:body 
+		{: 
+			RESULT = new ASTList<Declaration>(((RoutineDeclaration)decl).setBody((Scope)body));
+		:} |
+		
+	FORWARD:lm functionHead:decl 
+		{: 
+			RESULT = new ASTList<Declaration>(
+				new ForwardDeclaration(
+					Location.begin(lmleft, lmright).pivot(lmleft, lmright, 7), 
+					(RoutineDeclaration)decl));
+		:} |
+		
+	FORWARD:lm procedureHead:decl 
+		{: 
+			RESULT = new ASTList<Declaration>(
+				new ForwardDeclaration(
+					Location.begin(lmleft, lmright).pivot(lmleft, lmright, 7), 
+					(RoutineDeclaration)decl));
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// FUNCTIONHEAD
+////////////////////////////////////////////////////////////////////////////
+	functionHead ::= type:ret identifier:name parameterList:routine 
+	{: 
+		RESULT = routine; 
+		((RoutineDeclaration)routine)
+			.setReturnType((Type)ret)
+			.setName((Identifier)name)
+			.__setLocation_Internal(new Location().pivot(name));
+	:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// PROCEDUREHEAD
+////////////////////////////////////////////////////////////////////////////
+	procedureHead ::= PROCEDURE:lm identifier:name parameterList:routine 
+		{: 
+			RESULT = routine; 
+			((RoutineDeclaration)routine)
+				.setName((Identifier)name)
+				.__setLocation_Internal(Location.begin(lmleft, lmright).pivot(name));
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// VARIABLEDECLS
+////////////////////////////////////////////////////////////////////////////
+	variabledecls ::= 
+		variabledecl:decl 
+		{: 
+			RESULT = new ASTList<VariableDeclaration>(getLocation()).addLast((VariableDeclaration)decl);
+		:} |
+		
+		variabledecls:list COMMA variabledecl:decl 
+		{: 
+			RESULT = list; ((ASTList<VariableDeclaration>)list).addLast((VariableDeclaration)decl);
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// VARIABLEDECL
+////////////////////////////////////////////////////////////////////////////
+	variabledecl ::= identifier:name 
+		{: 
+			RESULT = new VariableDeclaration((Identifier)name);
+		:} |
+		
+	identifier:name L_SQUARE INTCONST:upper R_SQUARE:rm
+		{: 
+			Location l = new Location().pivot(name).end(rmleft, rmright);
+			RESULT = new ArrayDeclaration(l, (Identifier)name, 0, (Integer)upper);
+		:} |
+		
+	identifier:name L_SQUARE bound:lower DOT DOT bound:upper R_SQUARE:rm
+		{: 
+			Location l = new Location().pivot(name).end(rmleft, rmright);
+			RESULT = new ArrayDeclaration(l, (Identifier)name, (Integer)lower, (Integer)upper);
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// BOUND
+////////////////////////////////////////////////////////////////////////////
+	bound ::= 
+	
+	INTCONST:value 
+		{: 
+			RESULT = value;
+		:} |
+		
+	MINUS INTCONST:value 
+		{: 
+			RESULT = -value;
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// TYPE
+////////////////////////////////////////////////////////////////////////////
+	type ::= INTEGER:lm
+		{: 
+			RESULT = new IntegerType(Location.begin(lmleft, lmright).end(lmleft, lmright, 7));
+		:} |
+		
+	BOOLEAN:lm
+		{: 
+			RESULT = new BooleanType(Location.begin(lmleft, lmright).end(lmleft, lmright, 7));
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// OUTPUTS
+////////////////////////////////////////////////////////////////////////////
+	outputs ::= output:expr 
+		{: 
+			RESULT = new ASTList<Expression>(getLocation()).addLast((Expression)expr);
+		:} |
+		
+	outputs:list COMMA output:expr 
+		{: 
+			RESULT = ((ASTList<Expression>)list).addLast((Expression)expr);
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// OUTPUT
+////////////////////////////////////////////////////////////////////////////
+	output ::= expression:expr 
+		{: 
+			RESULT = expr;
+		:} |
+		
+	TEXTCONST:text 
+		{: 
+			RESULT = new StringConst(getLocation(), text);
+		:} |
+		
+	SKIP:lm
+		{: 
+			RESULT = StringConst.newLine(Location.begin(lmleft, lmright).end(lmleft, lmright, 4));
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// INPUT
+////////////////////////////////////////////////////////////////////////////
+	input ::= variable:var 
+		{: 
+			RESULT = new ASTList<VariableAccess>(getLocation()).addLast((VariableAccess)var);
+		:} |
+		
+	input:list COMMA variable:var 
+		{: 
+			RESULT = ((ASTList<VariableAccess>)list).addLast((VariableAccess)var);
+		:} ;
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// ARGUMENTLIST
+////////////////////////////////////////////////////////////////////////////
+argumentList ::= 
+	L_PAREN arguments:args R_PAREN 
+		{: 
+			RESULT = args;
+		:} |
+		
+	L_PAREN:lm R_PAREN:rm
+		{: 
+			Location l = Location.begin(lmleft, lmright-1).pivot(lmleft, lmright).end(rmleft, rmright);
+			RESULT = new ASTList<Expression>(l);
+		:} ;
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// ARGUMENTS
+////////////////////////////////////////////////////////////////////////////
+arguments ::= 
+	expression:expr 
+		{: 
+			RESULT = new ASTList<Expression>(getLocation()).addLast((Expression)expr);
+		:} |
+	
+	arguments:list COMMA expression:expr 
+		{: 
+			RESULT = ((ASTList<Expression>)list).addLast((Expression)expr);
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// PARAMETERLIST
+////////////////////////////////////////////////////////////////////////////
+parameterList ::= 
+	L_PAREN parameters:params R_PAREN 
+		{: 
+			RESULT = params;
+		:} |
+		
+	L_PAREN:lm R_PAREN:rm
+		{: 
+			Location l = Location.begin(lmleft, lmright-1).pivot(lmleft, lmright).end(rmleft, rmright);
+			RESULT = new RoutineDeclaration(l);
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// PARAMETERS
+////////////////////////////////////////////////////////////////////////////
+parameters ::= 
+	type:type identifier:name 
+		{: 
+			RESULT = new RoutineDeclaration(getLocation()).addParameter(new Location().pivot(name), (Type)type, (Identifier)name);
+		:} |
+		
+	parameters:list COMMA type:type identifier:name 
+		{: 
+			RESULT = ((RoutineDeclaration)list).addParameter(getLocation(), (Type)type, (Identifier)name);
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// VARIABLE
+////////////////////////////////////////////////////////////////////////////
+variable ::= 
+	identifier:var 
+		{: 
+			RESULT = new VariableAccess((Identifier)var);
+		:} |
+		
+	identifier:array L_SQUARE expression:index R_SQUARE:rm
+		{: 
+			Location l = new Location().pivot(array).end(rmleft, rmright);
+			RESULT = new ArrayAccess(l, (Identifier)array, (Expression)index);
+		:};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// EXPRESSION
+////////////////////////////////////////////////////////////////////////////
+expression ::= 
+	expression:left OR:op and_op:right 
+		{: 
+			RESULT = new OrOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} |
+	and_op:op {: RESULT = op; :};
+
+	and_op ::= and_op:left  AND:op not_op:right 
+		{: 
+			RESULT = new AndOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} | 
+	not_op:op {: RESULT = op; :};
+
+	not_op ::= NOT:op not_op:expr 
+		{: 
+			RESULT = new UnaryNot(Location.begin(opleft, opright-1).pivot(opleft, opright), (Expression)expr);
+		:} | 
+	compare_ops:op {: RESULT = op; :}; 
+
+	compare_ops ::= add_minus:left LESS:op add_minus:right 
+		{: 
+			RESULT = new LessOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} |
+		
+	add_minus:left LESS EQUAL:op add_minus:right 
+		{: 
+			RESULT = new LessEqualOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} |
+		
+	add_minus:left GREATER:op add_minus:right 
+		{: 
+			RESULT = new GreaterOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} |
+		
+	add_minus:left GREATER:op EQUAL add_minus:right 
+		{: 
+			RESULT = new GreaterEqualOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} |
+		
+	add_minus:left EQUAL:op add_minus:right 
+		{: 
+			RESULT = new EqualOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} | 
+		
+	add_minus:left NOT EQUAL:op add_minus:right 
+		{: 
+			RESULT = new NotEqualOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} |
+		
+	add_minus:op {: RESULT = op; :};
+
+	add_minus ::= add_minus:left PLUS:op mult_divide:right 
+		{: 
+			RESULT = new PlusOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} | 
+		
+	add_minus:left MINUS:op mult_divide:right 
+		{: 
+			RESULT = new MinusOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} |
+		
+	mult_divide:op {: RESULT = op; :};
+
+	mult_divide ::= mult_divide:left TIMES:op unary_not_minus:right 
+		{: 
+			RESULT = new MultiplicationOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} | 
+		
+	mult_divide:left DIVIDE:op unary_not_minus:right 
+		{: 
+			RESULT = new DivisionOperator(new Location().pivot(opleft, opright), (Expression)left, (Expression)right);
+		:} | 
+		
+	unary_not_minus:op {: RESULT = op; :};
+
+	unary_not_minus ::= MINUS:op unary_not_minus:expr 
+		{: 
+			RESULT = new UnaryMinus(Location.begin(opleft, opright).pivot(opleft, opright), (Expression)expr);
+		:} | 
+		
+	operand:op {: RESULT = op; :};
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// OPERAND
+////////////////////////////////////////////////////////////////////////////
+	operand ::= 
+		INTCONST:v 
+			{: 
+				RESULT = new IntConst(Location.begin(vleft, vright).end(vleft, vright, 1), v);
+			:}  |
+			
+		TRUE:v
+			{: 
+				RESULT = new BoolConst(Location.begin(vleft, vright).end(vleft, vright, 4), true);
+			:} |
+			
+		FALSE:v
+			{: 
+				RESULT = new BoolConst(Location.begin(vleft, vright).end(vleft, vright, 5), false);
+			:} | 
+			
+		L_PAREN expression:expr R_PAREN 
+			{: 
+				RESULT = ((Expression)expr).addParenthesis();
+			:} |
+			
+		variable:var 
+			{: 
+				RESULT = var;
+			:} | 
+			
+		identifier:func argumentList:args 
+			{: 
+				RESULT = new FunctionInvocation(new Location().pivot(func), (Identifier)func, (ASTList<Expression>)args);
+			:}; 
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////// IDENTIFIER
+////////////////////////////////////////////////////////////////////////////
+	identifier ::= IDENT:id 
+		{: 
+			RESULT = new Identifier(Location.begin(idleft, idright), id);
+		:};

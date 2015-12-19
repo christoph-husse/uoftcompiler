@@ -1,0 +1,210 @@
+CSC488/2107 Assignment 4
+Term: Winter 2013
+Group: c488h08
+
+
+Functions and Procedures
+===========================================================================
+
+This document describes the process of machine code generation function and
+procedure calls. We first describe the layout of the activation record,
+then jump into specifics of routine entry, routine exit, and display update
+code. This is followed by a more verbose explanation of parameter passing,
+return values, and explanation of parameter passing, return values, and
+procedure calls.
+
+
+Activation Record
+===========================================================================
+
+The activation record for a function will consist of all of the
+control information needed for the function call and return:
+	Parameters
+	display[LLcallee]
+	Return address
+	Local variables
+
+
+When generating the code, the compiler will keep the following
+state in the symbol table:
+	Offset of each parameter
+	Offset of each local variable
+
+
+Example:
+
+488 code:
+
+	integer func1(integer param1, boolean param2)
+	begin
+		integer var1
+		var1 := 4
+		result 5
+	end
+	func1(3, true)
+
+Stack memory layout:
+
+	Before func1    After func1        Stack expands upward
+	____________    ___________
+	0x0             0x100           <- var1
+	word            word            <- Return address
+	0x0             0x101           <- Return value
+	0x11            0x11            <- param1
+	0x1             0x1             <- param2
+
+
+Procedure and Function Entrance Code
+===========================================================================
+
+The routine entrance code is generated as follows, in this order:
+
+The caller:
+	Push parameters onto stack in backward order
+	Save the display entry for the callee's LL
+	Push return address (PC+1) on top of stack
+	Unconditional branch to the callee's first instruction
+
+The callee:
+	Update the display (described below)
+	Push local variables onto stack
+
+
+488 code:
+
+	integer func1(integer param1, boolean param2)
+	begin
+		integer var1
+	end
+	func1(3, true)
+
+Machine code:
+
+	Caller instructions:
+
+	ADDR callerLL param2_offset    <- Push the value of param2
+	LOAD
+	ADDR callerLL param1_offset    <- Push the value of param1
+	LOAD
+	ADDR calleeLL 0                <- Save the display
+	PUSH addr                      <- Return address (next ins of caller)
+	PUSH addr                      <- Push the first ins of func1
+	BR                             <- Jump to func1
+
+	Callee instructions:
+
+	PUSHMT
+	SETD calleeLL                  <- Set the display
+	PUSH 0                         <- Push space for var1
+
+Procedure and Function Exit Code
+===========================================================================
+
+The routine exit code is generated as follows, in this order:
+
+The callee:
+	Write the return value into REG_RV
+	Pop all local variables off the stack
+	Unconditional branch to the return address
+
+The caller, upon return:
+	Pop the return address off the stack
+	Restores the saved display value
+	Pop the parameters off the stack
+
+
+488 code:
+
+	integer func1(integer param1, boolean param2)
+	begin
+		integer var1
+	end
+	func1(3, true)
+
+Machine instructions:
+
+	Callee instructions:
+
+	ADDR  LL 0                <- Get the address of the return value
+	ADDR  LL retExpr_offset   <- Get the value to return
+	LOAD
+	STORE                     <- Write the value into the return location
+	PUSH  1                   <- Pop 1 local variable from the stack
+	POPN
+	ADDR  LL 1                <- Get the return address
+	BR
+
+	Caller instructions:
+
+	PUSH 1                    <- Pop the return address
+	POPN
+	SETD LLcallee             <- Restore the display
+	PUSH 2
+	POPN                      <- Pop the 2 arguments
+
+
+
+Display Updates
+===========================================================================
+
+Whenever execution enters an anonymous scope or enters a major scope
+through routine invocation, the display must be updated. When entering
+an anonymous scope, the display update is simple: the display[LLnext]
+is set to point at the first variable of the scope.
+
+488 Code:
+
+	begin
+		integer a
+	end
+
+Machine code:
+
+	PUSHMT                        <- Push the MSP
+	SETD LLnext                   <- Set the display. LLnext is the
+	                                 lexic level of the scope to enter
+
+Display updates for routine invocation and exit are a bit more
+involved. The caller saves display[LLcallee] since the callee will
+replace it with its own value, then we restore the original value
+after the call.
+
+
+Parameter Passing
+===========================================================================
+
+Parameters will be passed by value on the stack. Each routine has a
+fixed number of parameters, and the caller of the routine pushes
+the parameters onto the stack in reverse order.
+
+Parameters are in fixed locations during every invocation of the
+routine, so they can be kept as an offset from the start of the
+activation record, in order. Their offsets are negative relative to
+the display entry for the routine, and the offsets are grown in
+reverse. display[LL-3] contains the first parameter, display[LL-4]
+contains the second, etc.
+
+When the function call completes, the caller pops the parameters off the
+stack along with the rest of the activation record.
+
+See the above sections for concrete examples.
+
+
+Function Call and Function Value Return
+===========================================================================
+
+The return value is kept at a reserved space near the beginning of
+memory which we call REG_RV. This location is defined in
+CodeGenASTVisitor.java.
+
+See the above sections for a concrete example.
+
+
+Procedure Call
+===========================================================================
+
+Procedures can be implemented exactly the same way as functions.  The
+procedure will not write into the return value location, and the
+location will not be read when the procedure returns.
+
+

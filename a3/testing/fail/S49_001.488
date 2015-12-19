@@ -1,0 +1,18 @@
+% S49
+%
+% If function/procedure was declared forward, verify forward declaration matches
+
+begin
+    forward integer foo(integer a, integer b)
+
+    integer foo(integer a)
+    begin
+        result 0
+    end
+
+    integer a
+
+    a := 1
+
+    foo(a)
+end

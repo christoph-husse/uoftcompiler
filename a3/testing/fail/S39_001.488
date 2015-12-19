@@ -1,0 +1,17 @@
+% S39
+%
+% Check that identifier has been declared as a parameter
+
+begin
+    integer foo(integer a, integer b)
+    begin
+        result (a + b) + c
+    end
+
+    integer a, b
+
+    a := 1
+    b := 2
+
+    a := foo(a, b)
+end

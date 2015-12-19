@@ -1,0 +1,14 @@
+begin
+	integer a, b, c, d
+	a := 3
+	b := true
+	if a = 3
+	then
+		if b = 4
+		then
+			c := 5
+		else
+			d := 6
+		% missing fi
+	fi
+end

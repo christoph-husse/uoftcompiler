@@ -1,0 +1,16 @@
+% T05
+%
+% testing S30
+
+begin
+	integer a
+	a := 0
+	loop
+		exit when a > 20
+		if a > 10
+		then
+			put a 
+		fi
+		a := a + 1
+	pool
+end

@@ -1,0 +1,14 @@
+% S34
+%
+% arrays cannot be re-assigned as scalars
+
+begin
+	integer why()
+	begin
+		result 5
+	end
+	integer a, b, c[-2..3]
+	c := a + b
+	why := c
+end
+	

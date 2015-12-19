@@ -1,0 +1,18 @@
+% S32
+%
+% Check that left and right operand expressions are the same type
+
+begin
+    integer a, b
+    boolean c, d
+
+    a := 1
+    b := 2
+    c := true
+    d := false
+
+    c := a = b
+    c := a != b
+    c := c = d
+    c := c != d
+end

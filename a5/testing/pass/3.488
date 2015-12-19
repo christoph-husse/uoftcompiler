@@ -1,0 +1,11 @@
+begin
+    proc foo(integer x, integer y)
+    begin
+        return
+    end
+
+    integer a, b
+    a := 1
+    b := 2
+    foo(a, b)
+end

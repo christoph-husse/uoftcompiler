@@ -1,0 +1,34 @@
+CSC488/2107 Assignment 3
+Term: Winter 2013
+Group: c488h08
+
+
+Who Did What
+===========================================================================
+
+Since this assignment is naturally divided into several distinct modules,
+those modules were used to split the chunks of work.
+
+c0sunkue: Semantic analysis:
+            Expression Result Types
+            Expression Type Checking
+
+c9bukals: Semantic analysis:
+            Scopes and Program
+            S51, S52
+            Functions
+            Procedures and Arguments
+
+c2weizhe: Testing
+          Test Cases
+
+c2shaoyu: Symbol Table
+          Semantic analysis: Declarations
+
+c3hussec: AST & CUP
+          Extra features:
+            Reporting
+            ASTNode printing
+            C++ execution
+            other stuff
+

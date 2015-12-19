@@ -1,0 +1,15 @@
+% S34
+%
+% Check that variable and expression in assignment are the same type
+
+begin
+    integer a, b
+    boolean c, d
+
+    a := 1
+    b := 2
+    c := true
+    d := false
+
+    a := (a = b) & d
+end

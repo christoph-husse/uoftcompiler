@@ -1,0 +1,16 @@
+% S30
+%
+% Check that type of expression is boolean
+%
+% statement: 'if' expression S30 'then' statement 'fi'
+
+begin
+    integer a
+
+    a := 0
+
+    if a
+    then
+        a := 1
+    fi
+end

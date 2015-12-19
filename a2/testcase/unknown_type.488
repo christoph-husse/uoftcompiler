@@ -1,0 +1,8 @@
+begin
+	integer foo(integer x)
+	begin
+		result 5
+	end
+	string a, b
+	a[4] := "hello"
+end

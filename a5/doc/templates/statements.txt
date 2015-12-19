@@ -1,0 +1,200 @@
+CSC488/2107 Assignment 4
+Term: Winter 2013
+Group: c488h08
+
+
+Statements
+===========================================================================
+
+This document describes the process of machine code generation for each of
+the assignment, if, loop, exit, return, result, get, and put statements in 
+the CSC488S Source Language.
+
+
+Assignment
+===========================================================================
+
+Variable assignment code is generated as follows:
+
+The variable address is pushed onto the stack. Expression generation takes
+place at this point, after which the value of the variable will be located 
+at the top of the stack. The value is then stored to memory.
+
+488 code:
+    
+    integer var1
+    var1 := 1
+
+Machine instructions:
+    
+    ADDR var1LL var1ON        <- Push the variable address
+    Generate expression       <- See above
+    STORE                     <- Write the value
+
+
+if
+===========================================================================
+
+Code for the if statement is generated as follows:
+
+Expression generation takes place, after which the value of the expression
+will be located at the top of the stack. If there is an else block, push
+its address and branch to it on false, otherwise generate code for the then
+block followed by a branch to end of code. If there is not an else 
+block, do as above, but instead of branching to an else block, branch to 
+end of code.
+
+488 code:
+    
+    integer var
+    if true 
+    then 
+        var := 2 
+    else 
+        var := 3 
+    fi
+
+Machine code:
+
+    Generate expression       <- See above
+    PUSH elseAddress          <- Push the else block address
+    BF                        <- Branch to else if expression is false
+    Generate then code        <- See above
+    PUSH ifEndAddress         <- Push end of code address
+    BR                        <- Branch out of code
+    Generate else code        <- See above
+    
+488 code:
+
+    integer var
+    if true 
+    then 
+        var := 1 
+    fi
+
+Machine code:
+    Generate expression       <- See above
+    PUSH ifEndAddress         <- Push end of code address
+    BF                        <- Branch to else if expression is false
+    Generate then code        <- See above
+
+
+loop
+===========================================================================
+
+Code for the loop statement is generated as follows:
+
+Code generation takes place, then emit push of the start of loop address
+and branch.
+
+488 code:
+
+    integer var
+    loop
+        var := 1
+    pool
+
+Machine code:
+    
+    Generate statement code   <- See above
+    PUSH loopStartAddress     <- Push start of code address
+    BR                        <- Branch to the start of the loop code
+
+
+exit
+===========================================================================
+
+AST exit nodes will keep a pointer to the parent loop they refer to. In the 
+case of exit statements that break out of an integer i number of loops, 
+this will be the ith containing loop. In the case of exit statements
+without an integer argument, this will be the immediate containing loop.
+
+Code for the exit statement is generated as follows:
+
+Expression generation takes place, after which the value of the expression
+will be located at the top of the stack. Push the address of the end of
+the exit block and branch out of the block if the expression is false. 
+After this (if we did not branch), push the address of the end of the loop
+that this exit statement refers to and branch to it.
+
+488 code:
+
+    exit 2 when true
+
+
+Machine code:
+
+    Generate expression       <- See above
+    PUSH exitEndAddress       <- Push end of exit address
+    BF                        <- Branch past exit statement if expression
+                                 is false
+    PUSH loopEndAddress       <- Push end address of referred loop 
+    BR                        <- Branch to the end of the referred loop 
+
+
+return/result
+===========================================================================
+
+Code generation for return and result statements proceeds as described in
+the sections Function Call and Function Value Return and Procedure Call in
+the document templateRoutines.txt. 
+
+
+get
+===========================================================================
+
+Code for the get statement is generated as follows:
+
+The variable address is pushed onto the stack. READI is emitted to read an
+integer value from standard input. The read value is then stored to memory. 
+
+488 code:
+
+    integer inputVar
+    get inVar
+    
+Machine instructions:
+
+    ADDR inVarLL inVarON      <- Get the address of the input variable
+    READI                     <- Read from standard input
+    STORE                     <- Write the input value
+    
+The above code generation procedure is repeated once per variable for get
+statements with multiple variables
+
+
+put
+===========================================================================
+
+Code for the put statement is generated as follows:
+
+    For string constant arguments, iterate through each character, pushing
+        and printing
+    For integer expression arguments, code generation evaluates expression,
+        after which the value of the expression will be located at the top
+        of the stack. The value is then printed to standard output.
+    For skip directives, push a newline character then print it to 
+        standard output.
+
+488 code:
+
+    put "output", 42, skip
+
+Machine instructions:
+    
+    PUSH 'o'                  <- Print 'o'
+    PRINTC
+    PUSH 'u'                  <- Print 'u'
+    PRINTC
+    PUSH 't'                  <- Print 't'
+    PRINTC
+    PUSH 'p'                  <- Print 'p'
+    PRINTC
+    PUSH 'u'                  <- Print 'u'
+    PRINTC
+    PUSH 't'                  <- Print 't'
+    PRINTC
+    Generate expression       <- See above
+    PRINTI                    <- Print the expression
+    PUSH '\n'                 <- Push a newline literal
+    PRINTC                    <- Print the newline to standard output

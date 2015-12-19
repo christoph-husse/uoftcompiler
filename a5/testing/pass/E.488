@@ -1,0 +1,72 @@
+% Assignment 1 part E
+
+begin
+    integer global
+
+    proc recA()
+    begin
+        global := global * 13
+    end
+
+    proc recB(integer a)
+    begin
+        recA()
+        global := global * a
+    end
+
+    integer fib(integer a)
+    begin
+        if a <= 0 then
+            result 1
+        fi
+
+        result fib(a - 1) + fib(a - 2)
+    end
+
+    integer recC()
+    begin
+        recB(3)
+        recA()
+        result global + 546
+    end
+
+    integer recD(integer a, integer b)
+    begin
+        proc recE()
+        begin
+            proc recF()
+            begin
+                global := global * 7
+                return
+            end
+
+            global := global * 27
+            recF()
+        end
+
+        integer recG()
+        begin
+            proc recF()
+            begin
+                global := global * 23
+            end
+
+            global := global * 41
+            recF()
+            result global - (global / 123) * 123
+        end
+
+        global := global + recG()
+        recE()
+        result global * a + a * b * recC()
+    end
+    
+	integer ans
+	ans := recD(5, 7)
+	put "recD(5, 7) = ", ans, skip
+    if  fib(11) != 233 then
+        put "ERROR! fib(11) != 233", skip
+    else
+        put "OK! fib(11) =:= 233", skip
+    fi
+end

@@ -1,0 +1,19 @@
+begin
+	forward proc b2str(boolean yes)
+
+    proc b2str(boolean yes)
+	begin
+		return
+	end
+	
+	forward integer b2str2(boolean yes)
+
+    integer b2str2(boolean yes)
+	begin
+		result 1
+	end
+	
+	integer var
+	
+	var := b2str(true)
+end

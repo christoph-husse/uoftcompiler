@@ -1,0 +1,7 @@
+% S52
+%
+% Check that return statement is inside a procedure
+
+begin
+    return
+end

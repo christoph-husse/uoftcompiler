@@ -1,0 +1,10 @@
+% T01
+%
+% Check that there is no variable redefinition
+
+begin
+    integer a, b
+    integer a
+
+    b := 1
+end

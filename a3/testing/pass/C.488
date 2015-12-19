@@ -1,0 +1,93 @@
+% ===============================================================
+% Assignment 1: Part C
+% 
+% Loop and loop.
+% ===============================================================
+
+begin
+
+    % ===============================================================
+    % Declarations
+    % ===============================================================
+
+    integer simple1, simple2
+    integer complex[0..5]
+
+    % ===============================================================
+    % Statements
+    % ===============================================================
+
+    % ===============================================================
+    % Initialization
+    % ===============================================================
+
+    simple1 := 0
+    simple2 := 0
+    complex[0] := 0
+    complex[1] := 0
+    complex[2] := 0
+    complex[3] := 0
+    complex[4] := 0
+    complex[5] := 0
+
+    % ===============================================================
+    % Simple Loop 1
+    % ===============================================================
+
+    put "Enter Simple Loop 1...", skip
+
+    loop
+        simple1 := simple1 + 1
+
+        if (simple1 = 100)
+        then
+            exit
+        fi
+    pool
+
+    % ===============================================================
+    % Simple Loop 2
+    % ===============================================================
+
+    put "Enter Simple Loop 2...", skip
+
+    loop
+        simple2 := simple2 + 1
+
+        exit when (simple2 = 100)
+    pool
+
+    % ===============================================================
+    % Complex Loop
+    % ===============================================================
+
+    put "Enter Complex Loop...", skip
+
+    loop
+        complex[0] := complex[0] + 1
+        loop
+            complex[1] := complex[1] + 1
+            loop
+                complex[2] := complex[2] + 1
+                loop
+                    complex[3] := complex[3] + 1
+                    loop
+                        complex[4] := complex[4] + 1
+                        loop
+                            complex[5] := complex[5] + 1
+                            exit 2 when (complex[5] = 100)
+                        pool
+                        put "Can", "I", "show", "this", "message", "?", skip
+                    pool
+                    exit when (complex[3] = 100)
+                pool
+                exit 2
+            pool
+            put "Can I show this message?", skip
+        pool
+        exit
+    pool
+
+    put "All loops are done.", skip
+
+end

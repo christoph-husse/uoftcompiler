@@ -1,0 +1,7 @@
+% S51
+%
+% Check that result is inside a function
+
+begin
+    result 0
+end

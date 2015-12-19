@@ -1,0 +1,14 @@
+% S31
+% 
+% Using booleans where integers are expected
+% expecting 4 errors
+
+begin
+	integer a, b, array[5]
+	boolean yes
+	b := 2
+	a := -yes
+	get yes
+	put "yes: ", yes, skip
+	array[2 < 3] := 3
+end

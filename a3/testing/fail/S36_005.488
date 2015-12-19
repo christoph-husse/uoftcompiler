@@ -1,0 +1,17 @@
+% S36
+%
+% Checks wrong argument and wrong number of arguments
+% expecting 3 errors
+
+begin
+	integer x
+	integer crazy(integer a, boolean b, integer c)
+	begin
+		integer local
+		local := 2
+		result 3
+	end
+	
+	x := crazy(false, 3, 2) + crazy(1, 2)
+end
+	

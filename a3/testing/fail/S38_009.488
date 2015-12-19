@@ -1,0 +1,16 @@
+% S38
+%
+% Checks that scalars cannot be used as array variables
+
+begin
+	integer foo(integer a)
+	begin
+		result a
+	end
+	integer a, b, c
+	a := b[3] + 2
+	if foo(c[2]) < 3
+	then
+		put "expecting 2 errors"
+	fi
+end

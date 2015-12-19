@@ -1,0 +1,7 @@
+% S50
+%
+% Check that exit statement is inside a loop
+
+begin
+    exit
+end

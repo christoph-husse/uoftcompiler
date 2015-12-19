@@ -1,0 +1,14 @@
+% S31
+%
+% Check that type of expression or variable is integer
+%
+% expression: expression '/' expression S31
+
+begin
+    integer a, b
+
+    a := 1
+    b := 2
+
+    b := a / (a < b)
+end

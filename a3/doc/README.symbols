@@ -1,0 +1,38 @@
+CSC488/2107 Assignment 3
+Term: Winter 2013
+Group: c488h08
+
+
+Symbol Table Documentation
+==========================================================================
+
+The SymbolTable is implemented as a recursive structure encapsulated in
+the abstract syntax tree. Each scope in the AST has a symbol table that is
+populated with the symbols in that scope. When a caller asks for local
+symbols, the table returns only a matching symbol in the most immediate
+scope (or null). When a caller asks for a symbol regardless of scope, the
+table first looks in the most local scope, then recursively travels up the
+tree to look for the symbol in the most immediate enclosing scope, all the
+way up to the root scope of the AST.
+
+A hash table stores the SymbolTable's data internally, which should provide
+constant time access on average to its elements. The recursive nature of
+the searching in enclosing scopes means that the table can perform worse as
+scopes become deeper. To avoid this recursive search, the table could
+instead be implemented as a single table by disambiguating the symbol
+names. For example, scopes can be given a unique name and the name of the
+scope can be prepended to all of its symbol names in the table. Ultimately,
+since performance is not an issue in this assignment, our recursive
+approach allows for simpler code and integrates well into the AST
+structure. Furthermore, a large proportion of symbol lookups are expected
+to be resolved in the innermost scope.
+
+Lookups return Type structures, which contain a reference to the
+declaration where the symbol originates. Through the declaration,
+information about the symbol can be obtained for semantic checks.
+
+When a scope is the body of a routine, then the scope and consequently its
+symbol table also hold the parameters of its associated routine as symbols.
+However, the scope is not explicitly aware of the fact that it is a routine
+body, and the symbol table treats the parameters in the same way that it
+would treat variable declarations.

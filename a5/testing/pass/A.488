@@ -1,0 +1,142 @@
+% Assignment 1 part A
+% This program uses all arithmetic, logical and comparison operators.
+
+%    Operator precedence:
+%    ===================
+%    unary -
+%    * /             (left->right assoc.)
+%    + binary -      (left->right assoc.)
+%    = != < <= > >=  Note: assuming '#' operator is a typo
+%    !
+%    &               (left->right assoc.)
+%    |               (left->right assoc.)
+
+begin
+    %==============================================================
+    % Declarations
+    %==============================================================
+    
+    proc b2str(boolean yes)
+        begin
+            if yes
+            then
+                put "true"
+            else
+                put "false"
+            fi
+            return
+        end
+        
+    proc b2strs(boolean yes)
+        begin
+            b2str(yes)
+            put skip
+            return
+        end
+        
+    integer one()
+        begin
+            result 1
+        end
+
+    % cannot mix declaration and initialization
+    integer int1
+    integer int2
+        
+    boolean bool1
+    boolean bool2
+
+    % ===========
+    %  Initialization
+    % ===========
+    int1 := 1
+    int2 := 2
+    
+    bool1 := true
+    bool2 := false
+
+    %==============================================================
+    % Arithmetic operators
+    %==============================================================
+
+    put "1 + 2 = ", (1 + 2), skip
+    put "1 - 1 = ", (1 - one()), skip
+    put "1 * 2 = ", (int1 * int2), skip
+    put "10 / 2 = ", (10 / int2), skip
+    put "-1 + 2 = ", (-int1 + int2), skip
+
+    %=============================================================
+    % Logical operators
+    %=============================================================
+
+    put "true | false = "
+    b2strs(bool1 | bool2)
+    
+    put "true & false = "
+    b2strs(bool1 & bool2)
+    
+    put "!true = "
+    b2strs(!bool1)
+
+    %=============================================================
+    % Comparison operators
+    %=============================================================
+    
+    put "1 = 2 ? "
+    b2strs(1 = 2)
+    
+    put "1 != 2 ? "
+    b2strs(1 != 2)
+    
+    put "1 != 1 ? "
+    b2strs(1 != 1)
+    
+    put "1 < 2 ? "
+    b2strs(1 < 2)
+    
+    put "1 > 2 ? "
+    b2strs(1 > 2)
+    
+    put "1 >= 2 ? "
+    b2strs(1 >= 2)
+    
+    put "2 >= 2 ? "
+    b2strs(2 >= 2)
+    
+    put "1 <= 2 ? "
+    b2strs(1 <= 2)
+    
+    put "1 <= 1 ? "
+    b2strs(1 <= 1)
+
+    %=============================================================
+    % Left to right association test
+    %=============================================================
+    if ((20 / 10 / 2) = 1)
+    then
+        put "20 / 10 / 2 = 1 (left associative)", skip
+    else
+        put "20 / 10 / 2 = 4 (right associative)", skip
+    fi
+    
+    put "(20 / 10) * 2 = ", (20 / 10 * 2), skip  	% should be 4
+    put "(4 - 6) + 2 = ", (4 - 6 + 2), skip    		% should be 0  
+
+    %=============================================================
+    % Precedence test
+    %=============================================================
+    if (-2 * 3 / 2 + 1 - 2 = -4)
+    then
+        put "-2 * 3 / 2 + 1 - 2 = (((-2 * 3) / 2) + 1) - 2", skip
+    else
+        put "unexpected result", skip
+    fi
+
+    if (1 + 0 = 1 | false & true)
+    then
+        put "1 + 0 = 1 | 0 & 1 = ((1 + 0) = 1) | (false & true)", skip
+    else
+        put "unexpected result", skip
+    fi
+
+end

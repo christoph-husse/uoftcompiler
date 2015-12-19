@@ -1,0 +1,18 @@
+begin
+	proc foo(integer a, boolean b)
+	begin
+		integer n, s
+		n := 0
+		if n > 3
+		then
+			put a + n, b + n
+			exit
+		fi
+		pool
+		get s
+		n := n + s + 3 >= 5 - (!false)
+	end
+	integer x
+	x := 2
+	foo(x, 4)
+end

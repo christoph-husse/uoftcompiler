@@ -1,0 +1,17 @@
+% S41
+%
+% Check that identifier has been declared as a procedure
+
+begin
+    proc foo(integer a, integer b)
+    begin
+        return
+    end
+
+    integer x, y
+
+    x := 1
+    y := 2
+
+    bar(x, y)
+end

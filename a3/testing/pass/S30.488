@@ -1,0 +1,38 @@
+% S30
+%
+% Check that type of expression is boolean
+
+begin
+    integer a
+    boolean c, d
+
+    c := true
+    d := true
+
+    if c
+    then
+        a := 1
+    fi
+
+    if c
+    then
+        a := 1
+    else
+        a := 0
+    fi
+    
+    if (c & d)
+    then
+        a := 1
+    fi
+
+    if (c | d)
+    then
+        a := 1
+    fi
+
+    if (! c)
+    then
+        a := 1
+    fi
+end

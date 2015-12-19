@@ -1,0 +1,92 @@
+CSC488/2107 Assignment 1
+Term: Winter 2013
+Group: c488h08
+
+
+Part Allocation
+===============
+
+c0sunkue: Part A
+c9bukals: Part B
+c2weizhe: Part C
+c2shaoyu: Part D
+c3hussec: Part E
+
+
+Documentation
+=============
+
+This assignment is implemented using five self-contained programs, one for
+each of parts A to E. Part A tests arithmetic, logical and comparison
+operators. Part B tests arrays including both forms of declaration,
+positive and negative bounds. Part C tests each form of loop building,
+single and multi-level exit, conditional and unconditional exit. Part D
+tests declaration and usage of non-recursive functions and procedures with
+and without parameters. Part E tests recursive functions and procedures
+including nesting and mutual recursion.
+
+
+Part A
+
+The purpose of this program is to verify the correctness of arithmetic,
+logical, and comparison operators. This program has six specific parts.
+The first part declares all functions and variables used in the program.
+There is a helper function, b2str(), to help with printing booleans. The
+second part tests arithmetic operators, and specifically attempts various
+types of operand including variables, function return values, and
+constants. The third part briefly checks the behaviour of logical
+operators. In the fourth part, we test the validity of all comparison
+operators. The fifth part exercises operator associativity. Lastly, we
+ensure that precedence behaves as we expect.
+
+
+Part B
+
+This program demonstrates arrays and array declaration. The program has
+three sections. The first section creates an array using the single integer
+bound form of array declaration and prints the resulting values at each
+array index to standard output. The second section creates two arrays using
+the integer pair bound form of array declaration and prints the resulting
+values at each index of each array to standard output. The third section
+takes 5 integer array entry values from standard input. It then uses these
+to create an array populated with the provided values and prints the
+resulting values at each array index to standard output. 
+
+
+Part C
+
+This program demonstrates various kinds of loops and exits. The program
+consists of two simple loops and one complex loop. The first simple loop
+exits when some variable reaches a certain limit. The second simple loop is
+similar to the first one but uses the `exit when` statement. The complex
+loop is a nested loop. There are multiple levels of loops to show how to
+use `exit` and `exit when` statements (with an optional integer). Some
+`put` statements are used to output notices. Other `put` statements are
+used to show the effectiveness of all kinds of `exit` statements.
+
+
+Part D
+
+This program exercises non-recursive functions and procedure declarations
+and calls with and without parameters. Procedures are tested in the
+following variants: no parameters, integer parameter, boolean parameter,
+multiple parameters of both types. Functions are tested in the following
+cases: no parameters, integer parameter, boolean parameter, multiple
+parameters of both types, returning integer, returning boolean. Each
+function and procedure is called once, and the return values of func2,
+func3 and func4 are tested. proc2 and func3 are forward declared.
+
+
+Part E
+
+This program exercises recursive functions and procedure declarations and
+calls with and without parameters. It assumes that previous tests are
+already passing. It is a fully automatic test with no user input required
+and prints "OK" if the test has succeeded. One part computes fibonacci numbers
+recursively, which assesses recursion and optimization and thus acts as a
+stress test. Then there are nested recursive functions calling each other
+through different nesting levels, modifying a global integer. Most of these
+modifications are multiplications with distinct prime numbers which makes it
+highly unlikely for this test to succeed if recursion is not done right. The
+expected integer value was computed using a complementary C++ program, which
+already required noticeable execution time thanks to the fibonacci recursion.

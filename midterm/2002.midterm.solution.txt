@@ -1,0 +1,105 @@
+Solution and comments for CSC488S Mid Term test  2002
+
+1. Any form of finite state machine that processed Unicode
+   escape sequences correctly was acceptable.
+   
+   A correct solution had to handle
+   - counting preceeding \ characters to enforce the even/odd
+     convention, including emitting correct output in the case
+     of an odd number of preceeding \s
+   - handle breaks in the \ prefix, i.e. reset to start state
+     if anthing except u is seen after a \
+   - handle an arbitrary number of u characters after \
+   - detect incorrect number of hexDigits after a \u had been seen.
+   
+   Many solutions were incomplete.
+   
+2.  As described in the example in lecture
+    - first layout the union alternatives  X and Y using
+      Algorithm 2
+    - fit the alternatives together so that the alignment and
+      offset constraints for each alternative are satisfied
+    - determine the overall size and alignment of Z after the
+      previous step.  Note that Z is a 2-element array, the
+      layout and alignment has to be correct for all array elements.
+      
+    Here is a picture of the final layout.  Each character represents
+    one byte.  _ is offset,  * is fill
+    
+    
+    ____PPQ*RRRRRRRRSSSS________PPQ*RRRRRRRRSSSS
+    
+    _______ABBBBC***DDDDDDDD_______ABBBBC***DDDDDDDD
+    
+        ^ Z[0]                  ^Z[1]     
+    ^ 0%64
+
+   length of X  136        length of Y  128
+   length of union  160    length of Z[i]   192
+   
+   Most solutions used the wrong structure alignment algorithm
+   and/or made major mistakes in laying out the union.
+   
+3. There are a lot of checks that need to be made.
+
+   In the declarations, lines 1,2
+   - check that each variable has not been previously declared in 
+     the current scope.
+   - check that N has been previously defined as a compile time constant.
+   
+   In the statements, lines 14..19
+   - every use of a variable should check
+     - variable has been declared and is visible, accessible.
+   
+   line 14	check S is a variable
+   		check malloc is a 1-argument function
+		check sSize an acceptable argument to malloc
+		check value returned by malloc can be assigned to S
+   line 15	check strncpy is a 3-argument function
+   		check each argument for compatability
+   line 16	check J is a variable of some arithmetic type
+   line 17	check that S and A can be used as arrays
+   line 18	check that S and A can be used as arrays
+   line 19	check that printf is declared as a function
+   		and that it's arguments are acceptable
+		
+4. A good answer had a clearly specified algorithm for each of the
+   steps.  The solution below assumes the symbol table is a simple
+   stack.  An answer has to be correct with respect to whatever
+   symbol table organization you choose.
+   
+   - start of minor scope
+     Mark the start of the scope in the symbol table.
+     Do not increment lexical level (unlike a major scope)
+     
+   - end of minor scope
+     Pop symbol table back to the mark set at beginning of minor scope
+     If minor scope symbol table entries will be needed again later
+     either copy them somewhere or mark them so that symbol table
+     lookup algorithm won't find them.  Do not decrement lexical level.
+     
+   - symbol table lookup
+     Using a scope stack as suggested in Slide 155 would be a good way
+     to handle minor scopes.  If symbol table entries for minor scopes
+     are retained in the symbol table then they have to be marked in
+     some way so that the symbol table lookup algorithm won't find them.
+     
+   Most answers were either vague about details or incomplete.
+   
+5  A correct solution had to make sure director sets were disjoint
+   Issues 
+   - D had two rules starting with 'd'
+   - L was left recursive  (i.e. when  F ->  )
+   - Obvious solution for fixing D wouldn't work due to rule 2
+   
+   S	=	's'	,		{ s }
+   	=   	'b'  DM  L 'e'		{ b }
+	
+   L	=	S  LM	,		{ s , b }
+   		'f'   S  LM		{ f }
+		
+   LM	=	'm' S L     		{ m }
+   
+   DM   =	'd' 'm'  DM	,	{ d }
+   		*empty*			{ s , b, f } = follow{ DM }
+		

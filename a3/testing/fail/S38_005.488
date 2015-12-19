@@ -1,0 +1,13 @@
+% S38
+%
+% Check that identifier has been declared as an array
+
+begin
+    integer a, b, c[2..8]
+    boolean d, e[10], f[2..8]
+
+    a := b[3]
+    b[4] := c[6]
+    d := e[3]
+    e[4] := f[6]
+end

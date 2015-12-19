@@ -1,0 +1,21 @@
+begin
+    integer foo()
+    begin
+        integer a
+
+        proc bar()
+        begin
+            a := 2
+        end
+
+        bar()
+
+        result a
+    end
+
+    integer k
+
+    k := foo()
+
+    put k
+end

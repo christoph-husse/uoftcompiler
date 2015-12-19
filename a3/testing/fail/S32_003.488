@@ -1,0 +1,19 @@
+% S32
+%
+% Checks equality and inequality operators have the same type of operands
+
+begin
+	integer a, b
+	boolean eq
+	a := 3
+	b := 2
+	loop
+		if a != eq
+		then
+			put "expecting 2 errors"
+		fi
+		exit when b = eq
+		b := b + a
+	pool
+end
+	

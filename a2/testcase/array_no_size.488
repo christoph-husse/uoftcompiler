@@ -1,0 +1,10 @@
+begin
+	proc foo(integer x)
+	begin
+		integer a
+		put "hello world ", x > 5, skip
+		result x	% I guess this is semantic error
+	end
+	integer a[]
+	foo(5)
+end

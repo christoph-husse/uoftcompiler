@@ -1,0 +1,92 @@
+CSC488/2107 Assignment 3
+Term: Winter 2013
+Group: c488h08
+
+
+Abstract Syntax Tree Documentation
+==========================================================================
+
+The basic structure of the abstract syntax tree has not been significantly
+modified from the original structure. We have added some nodes and renamed
+most of them to carry more obvious names. The "AST dumping" functionality
+was augmented/replaced with 488 & C++ code generators, which can produce
+compilable code.
+
+Most node classes have the same functionality. The following are three
+special cases:
+
+    [Scope]: 
+        Each scope has its own local symbol table which is populated at
+        first acces.  Symbol lookup then traverse upwards through all
+        parent scopes and visits each symbol table until a symbol is found
+        or there are no scopes to visit anymore.
+
+    [ExitStatement]:
+    [RoutineDeclaration]: 
+        Both do implicit semantic checks through "getExitBehindLoop" and
+        "getForwardDeclaration" respectively. This check is in the AST and
+        not in a semantic checker, because the method already does all
+        necessary work that would be required to carry out the semantic
+        checks, so it just throws an exception too if something is wrong.
+        The semantic checker then just checks for that exception...
+
+The base class ASTNode provides a lot of important service routines which
+are shared across all nodes. Please see its JavaDoc, as its API is
+thoroughly documented.
+
+There are service classes that operate on the AST and are used for semantic
+checkers. The central part is the interface ASTVisitor, which realises the
+visitor pattern for all nodes. It is accompanied by ASTVisitorAdapter,
+which is a class and makes dealing with the visitor pattern a whole lot
+easier. It simply forwards non-overridden visit() methods to their parent
+classes in the inheritance chain, finally arriving at ASTNode.
+
+If ASTNode is not overridden, an exception might be thrown, depending on
+how the adapter is configured. This makes it quite convenient to use the
+visitor pattern for virtually all tasks in this assignment and even beyond.
+
+The "ASTPrettyPrinter" extends the visitor adapter and is a base class for
+the 488 & C++ code generators. It provides convenient methods to print and
+properly indent source code.  The "ASTPrinter488" and "ASTPrinterCPP"
+finally generate the source code using a depth-first traversal of the AST,
+generating the code on the fly (this even works for C# as a side note :D). 
+
+The basis for the semantic checkers is "ASTLexicalOrderVisitor" which
+traverses the AST in depth first order, but does so automatically. Usually
+you have to explicitly invoke the visitors of child nodes correctly to
+traverse the tree. Since this is an unnecessary bulk of work for semantic
+checking, each ASTNode provides a list of its children.  This way a single
+override of visit(ASTNode) is able to traverse the entire tree, since all
+nodes report their children correctly in an abstract way.
+
+The "SemanticASTVisitor" is what all semantic checkers derive from and
+provides some shared infrastructure, like a default error reporter and also
+takes care of reporting whether any semantic error has occured at all.
+
+Writing a semantic checker is now easy. Just override the visit() method
+for the nodes you need to check, implement the checks and if there is an
+error just use "beginError()" to get a proper error report, where you
+can store the details of the semantic error.
+
+The "Report" class provides extensive JavaDoc, so please refer to it for
+more info about how to use a returned report object. In summary, it
+provides a way to filter by verbosity, correctlty handles termination from
+everywhere in the program using "fatalError()", and coloring the console!
+
+Most notably, the Report class provides the ability to pretty-print an
+ASTNode. As an overview, we keep track of various pivots in grammar rules.
+For instance, a binary operator saves the begin and end offset of each
+operand, its operator and the whole expression. In the end this allows the
+Report class to not only tell the line and column of the error but also
+extract the entire relevant code portion, underline the errorneous
+expression and additionally set a caret below whatever is good for a given
+expression. In case of an operator it is important to set it under the
+operator, otherwise you may not know which operator in an expression like
+"(x + 4 * (3 - 1)) might have caused trouble.  Also an expression may
+stretch over multiple lines, too much to fit in one console line. In that
+case the caret position guides line compression to compress around the
+caret to maximize the visible information near the caret. This is why it is
+important to think about where the pivot of any expression should reside,
+otherwise the errorneous part might be compressed into "..." which yields
+very little insight.
+

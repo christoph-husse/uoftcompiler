@@ -1,0 +1,11 @@
+begin
+    integer foo(integer a, integer b)
+    begin
+        result (a + b)
+    end
+
+    integer x, y, z
+    x := 1
+    y := 2
+    z := foo(x, y)
+end

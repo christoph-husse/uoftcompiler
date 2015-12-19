@@ -1,0 +1,236 @@
+PUSHMT                      % Push stack pointer 
+SETD 0						 % set frame pointer (display[0]) to msp
+
+PUSH 0						 % default value is 0
+PUSH 5						 % 5 integers on line 1-3
+DUPN							 % push 5 stack up by 5 words (zero-filled)
+
+PUSH MACHINE_FALSE	 % default boolean value
+PUSH 5						 % 5 booleans on line 1-4
+DUPN
+
+PUSH 0
+PUSH 158					 % 151 + 7 = 158 integers on line 1-5
+DUPN
+
+PUSH MACHINE_FALSE
+PUSH 411					 % 11 + 400 = 411 booleans on line 1-6
+DUPN
+
+% 1-7
+ADDR 0 0                    % Address of i
+PUSH 1                      % Value of i for assignment
+STORE                       % Store 1 into i
+
+% 1-8
+ADDR 0 1                      % Address of j
+ADDR 0 0                      % Address of i
+LOAD                        % Load the value of i
+PUSH 3                      % Constant 3
+ADD                         % i + 3
+STORE                       % Store 1 + 3 into j
+
+% 1-9
+ADDR 0 2                      % Address of k
+ADDR 0 0                      % Address of i
+LOAD                        % Load the value of i
+ADDR 0 1                      % Address of j
+LOAD                        % Load the value of j
+SUB                         % i - j
+STORE                       % Store i - j into k
+
+% 1-10
+ADDR 0 3                      % Address of l
+ADDR 0 1                      % Address of j
+LOAD                        % Load the value of j
+ADDR 0 2                      % Address of k
+LOAD                        % Load the value of k
+MUL                         % j * k
+STORE                       % Store j * k into l
+
+% 1-11
+ADDR 0 4                      % Address of m
+ADDR 0 2                      % Address of k
+LOAD                        % Load the value of k
+ADDR 0 3                      % Address of l
+LOAD                        % Load the value of l
+DIV                         % k / l
+STORE                       % Store k / l into m
+
+% 1-12
+ADDR 0 5                      % Address of p
+PUSH MACHINE_TRUE           % True
+STORE                       % Store True into p
+
+% 1-13
+ADDR 0 6                      % Address of q
+PUSH MACHINE_FALSE          % False
+STORE                       % Store False into q
+
+% 1-14
+ADDR 0 7                      % Address of r
+ADDR 0 6                      % Address of q
+LOAD                        % Load the value of q
+PUSH 1                      % Push 1 and subtract. See templateExpressions.txt
+SUB                         % 
+NEG                         % !q
+STORE                       % Store !q into r
+
+% 1-15
+ADDR 0 8                      % Address of s
+ADDR 0 5                      % Address of p
+LOAD                        % Load the value of p
+ADDR 0 6                      % Address of q
+LOAD                        % Load the value of q
+OR                          % p | q
+STORE                       % Store p | q into s
+
+% 1-16
+ADDR 0 9                      % Address of t
+ADDR 0 8                      % Address of s
+LOAD                        % Load the value of s
+PUSH 1                      % Push 1 and subtract. See templateExpressions.txt
+SUB                         % 
+NEG                         % !s
+ADDR 0 5                      % Address of p
+LOAD                        % Load the value of p
+PUSH 1                      % Push 1 and subtract. See templateExpressions.txt
+SUB                         % 
+NEG                         % !p
+OR                          % !s | !p <=> s & p by DeMorgan's Law
+STORE                       % Store s & p into t
+
+% 1-17
+ADDR 0 5                      % Address of p
+ADDR 0 0                      % Address of i
+LOAD                        % Load the value of i
+ADDR 0 1                      % Address of j
+LOAD                        % Load the value of j
+LT                          % i < j
+STORE                       % Store i < j into p
+
+% 1-18
+ADDR 0 6                      % Address of q
+ADDR 0 2                      % Address of k
+LOAD                        % Load the value of k
+PUSH 1
+SUB							% subtract 1 from k
+ADDR 0 3                      % Address of l
+LOAD                        % Load the value of l
+LT                          % (k - 1) < l
+STORE                       % Store k <= l into q
+
+% 1-19
+ADDR 0 7                      % Address of r
+ADDR 0 1                      % Address of j
+LOAD                        % Load value of j
+ADDR 0 3                      % Address of l
+LOAD                        % Load value of l
+EQ                          % j = l
+STORE                       % Store j = l into r
+
+% 1-20
+ADDR 0 8                      % Address of s
+ADDR 0 2                      % Address of k
+LOAD                        % Load value of k
+ADDR 0 4                      % Address of m
+LOAD                        % Load value of m
+SUB                         % k - m
+PUSH 0                      % Push constant 0
+EQ                          % k - m = 0. See templateExpressions.txt
+STORE                       % Store k != m
+
+% 1-21
+ADDR 0 9                      % Address of t
+ADDR 0 1                      % Address of j
+LOAD                        % Load value of j
+ADDR 0 2                      % Address of k
+LOAD                        % Load value of k
+SWAP						
+LT                          % k < j (equivalent to j > k)
+STORE                       % Store k < j
+
+% 1-22
+ADDR 0 9                      % Address of t
+ADDR 0 1                      % Address of j
+LOAD                        % Load value of j
+ADDR 0 2                      % Address of k
+LOAD                        % Load value of k
+PUSH 1
+SUB                         % k - 1
+SWAP
+LT                          % (k - 1) < j == j >= k
+STORE                       % Store j >= k into t
+
+% 1-23
+ADDR 0 6                      % Address of q
+ADDR 0 7                      % Address of r
+LOAD                        % Load value of r
+ADDR 0 8                      % Address of s
+LOAD                        % Load value of s
+EQ                          % r = s
+STORE                       % Store r = s in q
+
+% 1-24
+ADDR 0 9                      % Address of t
+ADDR 0 8                      % Address of s
+LOAD                        % Load value of s
+ADDR 0 9                      % Address of r
+LOAD                        % Load value of r
+SUB                         % s - r
+PUSH 0                      % Push constant 0
+EQ                          % s - r = 0, See templateExpressions.txt
+STORE                       % Store s != r
+
+% 1-25
+ADDR 0 10                     % Address of A
+PUSH 5                      % Push constant 5
+ADD                         % Increment base address of A by 5
+PUSH 5                      % Push constant 5
+STORE                       % Store 5 in A[5]
+
+% 1-26
+ADDR 0 17                     % Address of B
+ADDR 0 0                      % Address of i
+LOAD                        % Load value of i
+PUSH 1                      % Push constant 1
+ADD                         % i + 1
+ADD                         % Increment base address of B by i + 1
+PUSH 100                    % Push constant 100
+ADD                         % Increment address by 100 to account for negative indices
+ADDR 0 10                     % Address of A
+ADDR 0 1                      % Address of j
+LOAD                        % Load value of j
+PUSH 2                      % Push constant 2
+SUB                         % j - 2
+ADD                         % Increment base address of A by j - 2
+LOAD                        % Load value of A[j - 2]
+STORE                       % Store A[j - 2] in B[i + 1]
+
+$ 1-27
+ADDR 0 168                    % Address of C
+PUSH -4                     % Push constant -4
+ADD                         % Decrement base address of C by 4
+PUSH 7                      % Push constant 7
+ADD                         % Increment address by 7 to account for negative indices
+ADDR 0 5                      % Address of p
+LOAD                        % Load value of p
+ADDR 0 6                      % Address of q
+LOAD                        % Load value of q
+OR                          % p | q
+STORE                       % Store p | q in C[-4]
+
+% 1-28
+ADDR 0 7                      % Address of r
+ADDR 0 179                    % Address of D
+ADDR 0 0                      % Address of i
+LOAD                        % Load value of i
+PUSH 200                    % Push constant 200
+ADD                         % i + 200
+ADD                         % Increment base address of D by i + 200
+LOAD                        % Load value of D[1 + 200]
+STORE                       % Store D[i + 200] in r
+
+% 1-29
+PUSH 580					% a total of 580 words reserved for local variables
+POPN							% deallocate by unwinding the stack

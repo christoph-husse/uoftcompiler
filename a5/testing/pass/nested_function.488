@@ -1,0 +1,15 @@
+begin
+    integer a
+    proc func(integer a)
+    begin
+        put "a = ", a, skip
+        if a != 7 then
+            put "[FAIL] a = ", a, skip
+        else
+            put "[PASS] a = 7", skip
+        fi
+    end   
+    a := 4
+    func(a+3)
+end
+

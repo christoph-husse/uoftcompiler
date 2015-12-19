@@ -1,0 +1,8 @@
+begin
+	integer foo(integer x)
+	begin
+		result 5
+	end
+	integer a[-1..+4], b
+	a[4] := 3
+end

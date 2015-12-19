@@ -1,0 +1,14 @@
+% S30
+%
+% Check that type of expression is boolean
+%
+% statement: 'exit' 'when' expression S30
+
+begin
+    integer a
+    a := 0
+
+    loop
+        exit when (a)
+    pool
+end

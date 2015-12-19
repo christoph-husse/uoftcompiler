@@ -1,0 +1,161 @@
+CSC488S  Compilers & Interpreters
+
+Solution for Winter 2000/2001 Mid Term Test
+
+1.  Backslash Continuation and Trigraphs
+
+    There are two ways to deal with backslash continuation
+    a)  *every* place in the scanner that advances the input
+        has to treat a backslash immediately followed by a newline
+	character as a special case and silently delete both
+	characters.  This affects accumulating identifiers,
+	reserved words and all forms of constants.
+	This is a pain because it complicates every loop in the
+	scanner. 
+     b)  if the scanner does the optimization of reading its
+        entire input file into memory in one operation, then it is
+	probably better to make a scan through the memory and delete
+	every pair of consecutive backslash/newline characters.
+	Note that the characters have to be removed, not just 
+	replaced by something else.
+	One should hope that this character pair doesn't occur
+	very often because worst case complexity is O( length^2 )
+	due to the character shifting required.
+	
+     Trigraphs are just plain ugly.
+     The only easy solution is to make a linear sweep through the
+     input replacing all trigraphs with their definition.
+     
+     This has to be done *before* any other processing since the
+     trigraphs expand into characters that have significant uses
+     for example
+     	
+		??=include <??-/my??/
+		file>
+		
+         becomes
+	 
+	 	#include <~/myfile>  
+		
+     I called this feature brain-damaged because it can wreck a 
+     correct program, for example
+     
+     	printf("Enter Social Insurance Number in the form ???-???-???\n");
+	
+2. There's a lot of checking that needs to be done
+
+   Line	Checking
+   all	*every* identifier should be checked to see that it has
+   	been declared and is accessible at this point in the program.
+   10	Check ch is a character or numeric variable
+   	Check getchar is a function returning a value assignable to ch
+	Check type of EOF is comparable to type of ch
+   11	Check that fprintf is a function
+   	Check number of arguments is correct (actually VARARG).
+	Check type of arguments.
+   13	Check that this statment occurs inside a void function
+   14	Check types of buffer[] and ch for assignment compatability.
+    	Check that subscript on buffer is legal
+	Check that bp is a variable that ++ can be used on.
+   15	Check that K is a variable and an integer value can be assigned
+    		to K
+   	Check that bp is a numberic value that can have an integer subtracted
+		from it
+	Check that K and bp-1 are types that can be compared.
+	Check that K is a variable that can have ++ applied to it
+   16	Check that ch and buffer[] are types that can be compared
+        Check that subscript on buffer is allowed
+	Check that K is a value that can be used as a subscript
+   17	This statement should have been  bp --   but my document
+      	processing program smeared the two -- together.  No one
+	lost marks for any reasonable interpretation of this statement.
+	Check that bp is a variable that can have -- applied to it.	
+   18	Check that this statement occurs inside a loop (it does).
+   
+3. Algorithm 2 maps the structures from the inside out.
+   First map the inner structures  stra  and  strb
+
+   Line  Name  	i    align length offset align(i) length(i) fill(i) offset(i)
+     4   ordinal2,1                        32        32       0         0
+    		     32     32      0                            
+     5   dNumb  2,2                        64        64       0         0
+	 	     64	    96	   32 
+		        		      
+		     
+     8   cursor 3,1                         8         8       0         0
+                      8      8      0                          
+     9   xCoord 3,2                        32         32      0         0
+		     32     40      24			      	             
+     9   yCoord 3,2                        32         32      0         0
+                     32     72      24
+     10  sptr   3,3                        32         32      0         0
+                     32    104      24
+     11  value  3,4                        64         64      0         0
+     		     64    168      24    
+
+   Since the outer structure is a union, not a struct, the fields
+   of the union overlay in memory (in some implementation defined way).
+   The mapping algorithm is not applied to the union level.
+   
+   We have to reconcile the differing offsets of stra and strb.
+   The best way is to start stra 8 bits inside the union.
+   The array clink also starts 8 bits inside the union so it is
+   properly aligned on a 16 bit boundary.
+   (If we instead shifted strb into the union) this would increase
+    the overall size of the structure).
+    	   
+   Line  Name  	i    align length offset align(i) length(i) fill(i) offset(i)
+     2   uchar 	1   	                    8         8                 0    
+
+    3-6  stra   2                          32        96                 8
+    
+   7-12  strb   3                          64       168                 0
+   
+     13  clink  4                          16        64                 8
+     
+   1-14  bigU          64     168    24
+   
+4. Hard to diagram this in ASCII
+
+   Type table should have entries for
+   - the builtin types  char*, double, int, unsigned char, short
+   - the two structure types   stra   and  strb
+     Each of the structure types should point to a field list in the
+     symbol table.
+   - the union BigU
+     This type should point to a linked list of 1st level field
+     names ( uchar, stra, strb, clink ) in the symbol table
+     
+   Symbol table should have an entry for every identfier in the
+   example.  Each identifier should point to its type table entry
+   
+5. Probably the easiest way to analyze this question is to
+   try an construct the LL(1) director sets for each case.
+   If the director sets exist and are disjoint you've justified
+   your answer.  If the director sets are not disjoint you've
+   justified a No answer
+
+   Case Answer		Productions	Director Sets 
+     
+   1.	LL(1)		S -> A B 'c'	{ a , b , c}
+   			A -> 'a'	{ a }
+			A -> 		{ b , c }
+			B -> 'b'	{ b }
+			B ->		{ c }
+			
+   2.   not LL(1)	S -> A B B A	{ a , b , |- }
+   			A -> 'a'	{ a }
+			A ->		{ a , b }  NOT disjoint
+			
+   3.   not LL(1)	S -> A 'b'	{ a , b }
+   			A -> 'a'	{ a }
+			A -> B		{ b }
+			A -> 		{ b }	    NOT disjoint
+			
+   4.    LL(1)		S -> 'a' S 'e'	{ a }
+   			S -> B		{ b , c , d}
+			B -> 'b' B 'e'	{ b }
+			B -> C		{ c , d }
+			C -> 'c' C 'e'	{ c }
+			C -> 'd'	{ d }
+					

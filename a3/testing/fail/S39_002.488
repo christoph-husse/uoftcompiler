@@ -1,0 +1,20 @@
+% S39
+%
+% Check that identifier has been declared as a parameter
+
+begin
+    proc bar(integer a, integer b)
+    begin
+        integer c
+
+        c := a + b + d
+        return
+    end
+
+    integer a, b
+
+    a := 1
+    b := 2
+
+    bar(a, b)
+end

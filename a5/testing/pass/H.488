@@ -1,0 +1,59 @@
+% H.488
+%
+% Building Pascal's Triangle
+%
+
+begin
+	integer a[100]
+	integer fetch(integer y, integer x)
+	begin
+		result a[y*10+x+1]
+	end
+	proc set(integer y, integer x, integer val)
+	begin
+		integer idx
+		idx := y*10+x+1
+		put "Setting a[", idx, "] to ", val, skip
+		a[idx] := val
+	end
+	integer i, j, m
+	
+	% we can use C-style indexing here
+	set(0, 0, 1)
+	j := 1
+	loop
+		set(j, 0, 1)
+		i := 1
+		loop
+			exit when i >= j
+			set(j, i, fetch(j-1, i) + fetch(j-1, i-1))
+			i := i + 1
+		pool
+		set(j, i, 1)
+		j := j + 1
+		exit when !(j < 10)
+	pool
+	
+	j := 0
+	loop
+		i := 0
+		loop
+			exit when j < i
+			m := fetch(j, i)
+			if m >= 10 then
+				if m >= 100 then	
+					put m
+				else
+					put " ", m
+				fi
+			else
+				put "  ", m
+			fi
+			put " "
+			i := i + 1
+		pool
+		put skip
+		j := j + 1
+		exit when j >= 10
+	pool
+end

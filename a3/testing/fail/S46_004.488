@@ -1,0 +1,8 @@
+% S46
+%
+% Check that lower bound is <= upper bound for negative bounds
+
+begin
+    integer array1[-5..-6]
+    array1[-5] := 5
+end

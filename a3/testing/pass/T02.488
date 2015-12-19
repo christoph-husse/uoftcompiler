@@ -1,0 +1,16 @@
+% T02
+%
+% Testing S32
+
+begin
+	integer a, b
+	boolean eq
+	a := 3
+	b := 2
+	eq := a = b
+	if a != b
+	then
+		put "a not equal to b"
+	fi
+end
+	

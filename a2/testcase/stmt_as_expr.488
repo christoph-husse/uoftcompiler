@@ -1,0 +1,13 @@
+begin
+	integer foo()
+	begin
+		result 5
+	end
+	integer a, b
+	if a := 2	% error here
+	then
+		b := foo()
+	else
+		b := 1
+	fi
+end

@@ -1,0 +1,37 @@
+CSC488/2107 Assignment 4
+Term: Winter 2013
+Group: c488h08
+
+
+
+STARTUP
+===========================================================================
+
+Assuming all code is in a buffer called "code : short[]", all constant/misc memory is in a buffer
+called "constants : short[]". Seems as if we don't need to deal with packing bytes in any way here.
+
+machine.powerOn();
+machine.setPC(0);
+machine.setMLP(machine.memorySize - constants.length);
+machine.setMSP(code.length);
+
+for(int i = 0; i < code.length; i++) { machine.writeMemory(i, code[i]); }
+for(int i = machine.memorySize - constants.length, j = 0; j < constants.length; i++, j++) 
+{ 
+	machine.writeMemory(i, constants[j]); 
+}
+
+machine.run();
+
+
+HALT
+===========================================================================
+
+Just emit the instruction at the end of main routine!
+
+ANONYMOUS SCOPES
+===========================================================================
+
+Semantics will be given by any other kind of scope like "if(true){}", since this is
+semantically equivalent.
+

@@ -1,0 +1,13 @@
+% T03 
+% 
+% Testing S34
+
+begin
+	integer a, b
+	boolean eq
+	a := 3
+	b := 2 + a
+	eq := a != b
+	put a, b, skip
+end
+	

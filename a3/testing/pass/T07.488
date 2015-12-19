@@ -1,0 +1,15 @@
+% T07
+%
+% Testing S31
+
+begin
+	integer a, b, c[4]
+	boolean yes
+	a := 1
+	get b
+	put 3 + 2, a, skip
+	loop
+		c[a] := a
+		a := a + 1
+	pool
+end

@@ -1,0 +1,15 @@
+begin
+	proc foo(integer a, boolean b)
+	begin
+		integer n
+		n := 0
+		loop
+			n > 3
+			exit when n > 2
+			n := n + 1
+		pool
+	end
+	integer x
+	x := 2
+	foo(x, 4)
+end

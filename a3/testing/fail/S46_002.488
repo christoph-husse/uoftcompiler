@@ -1,0 +1,8 @@
+% S46
+%
+% Check that lower bound is <= for zero bounds
+
+begin
+    integer array1[1..0]
+    array1[0] := 5
+end

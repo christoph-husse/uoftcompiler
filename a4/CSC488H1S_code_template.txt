@@ -1,0 +1,74 @@
+CSC488S     Compilers & Interpreters           Winter 2012/2013
+
+Description of the code generation templates.
+
+The code generation templates describe in great detail how you 
+plan to map the project language onto the CSC488S pseudo machine.
+You should describe your overall design strategy and give specific
+details on each of the constructs listed below.
+
+The purpose of requiring code templates is to ensure that you have
+a complete and correct mapping from the project language to the machine.
+
+For each of the items listed below
+- describe your strategy for implementing the item
+- give one or more examples of the machine code you
+  expect to generate.
+
+
+1. storage of scalar and array variables, constants
+   describe your strategy for allocating storage for 
+   and addressing variables and constants
+   a. variables in the main program
+   b. variables in procedures and functions
+   c. variables in minor scopes
+   d. integer and boolean constants
+   e. text constants
+
+2.  expressions
+    a. describe how the values of constants (including text constants)
+       will be accessed.
+    b. describe how the values of scalar variables 
+       will be accessed.  
+    c. Describe how array elements will be accessed.
+       Show details of array subscripting in the general case.
+    d. describe how you will implement each of the arithmetic
+       operators  +, -, *, and /
+    e. describe how you will implement each of the comparison
+       operators  <, <=, =, not =,  >=, > 
+    f. describe how you will implement each of the boolean
+       operators  and, or, not
+
+3.  functions and procedures
+    Describe how you will implement
+     a. the activation record for functions and procedures.
+     b. procedure and function entrance code (activation record setup, 
+        allocation of local variables, etc)
+     c. procedure and function exit code (cleanup, return values, etc)
+     d. describe how you will implement parameter passing.
+     e. describe how you will implement function call and function
+        value return.
+     f. describe how you will implement procedure call
+
+4.  statements 
+    Describe the general case of code you will generate for
+    each of the statements in the language.
+    a. assignment statement
+    b. if statements
+    c. loop statement
+    d. exit statements
+    e. return and result statement
+    f. get and put statements
+
+5.  Other
+    a. main program initialization and  termination
+    b. any handling of scopes not described above
+    c. any other information that you think is relevant.
+
+You have a lot of degrees of freedom in designing the mapping from the
+language to the machine. For example you could pre-load some convenient 
+compiler-generated utility functions into high memory.
+
+Organize your report by language features, and not by the code
+generation actions. We expect to see a section for each of the above
+points.

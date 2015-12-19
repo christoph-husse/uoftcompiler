@@ -1,0 +1,11 @@
+begin
+	proc foo(integer a, b)
+	begin
+		if a = 2
+		then
+			put b, skip
+		else
+			put b + 3, skip
+		fi
+	end
+end

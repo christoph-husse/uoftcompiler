@@ -1,0 +1,33 @@
+CSC488/2107 Assignment 4
+Term: Winter 2013
+Group: c488h08
+
+
+Part Allocation
+===========================================================================
+
+c0sunkue: Storage and Addressing of Variables and Constants
+c9bukals: Statements
+c2weizhe: Expressions
+c2shaoyu: Functions and Procedures
+c3hussec: Other
+
+
+Documentation
+===========================================================================
+
+The code generation templates describe our plan to translate 488 code into
+machine code for the course pseudo machine. The assignment is organized
+into five parts representing groups of language features and each of those
+parts are described in a separate document in this submission. Those
+documents are:
+
+1. templateStorage.txt - Storage and Addressing of Variables and Constants
+2. templateExpressions.txt - Expressions
+3. templateRoutines.txt - Functions and Procedures
+4. templateStatements.txt - Statements
+5. templateOther.txt - Other
+
+Each document first describes the high level plan for mapping the language,
+then give specific examples of how particular code snippets might be
+translated.

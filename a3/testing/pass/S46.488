@@ -1,0 +1,14 @@
+% S46
+%
+% Check that lower bound is <= upper bound
+
+begin
+    integer array1[0..0]
+    boolean array2[0..1]
+    boolean array2[1..1]
+    integer array3[4..10]
+    integer array4[0..92734]
+    integer array5[-6..-6]
+    integer array6[-2394..-32]
+    array1[0] := 5
+end

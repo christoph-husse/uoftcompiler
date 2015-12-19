@@ -1,0 +1,187 @@
+Solution Sketch for CSC488S Final Examination 2003
+
+1.  The real point of the question was to point out the really
+inefficient code that results from a naive approach to classifying
+characters.  Compare this code to the optimized solution given in the 
+lexical analysis lecture slides.
+
+- the question allows a lot of freedom in how the solution is 
+  expressed.  Use this freedom to make the answer simpler.
+- a totally unoptimized solution was acceptable for full marks.
+- in the solution below
+	cmp   X,Y    compare X and Y and set result code
+	ble   L	     branch to L if result code is  <=
+   	beq   L	     branch to L if result code is  ==
+        b     L      unconditional branch to L
+        ='x'	     the literal character x
+  Easiest way to build a solution is to lay out all the compares
+  and then figure out where the branches go.
+
+		cmp	='a',ch
+		ble	L2
+		b	L3
+	L2:	cmp	ch,='z'
+		ble			true exit
+		b	L3
+	L3:	cmp	='A',ch
+		ble	L4
+		b	L5
+	L4:	cmp	ch,='Z'
+		ble			true exit
+		b	L5
+	L5:	cmp	='0',ch
+		ble	L6
+		b	L7
+	L6:	cmp	ch,='9'
+		ble			true exit
+		b	L7
+	L7:	cmp	ch,='_'
+		beq			true exit
+		b			false exit
+
+2.  A correct solution had to account for
+	the left recursion of S on line 1
+	the left recursion of X on line 4
+	the duplicate non terminal Y on lines 5 and 6
+        the overlap between rule 5 and the definition of Y
+    while also producing a solution with disjoint director 
+    sets for each rule.
+					Director Sets
+    S		->  Shead  Stail	{ r , u , t  }
+
+    Stail	->  r Y Stail		{ r }
+		->  /* empty */		{ |- }
+
+    Shead	->  r X			{ r }
+		->  X			{ u , t  }
+    
+    X		->  Y Xhead  Xtail	{ u , t  }
+
+    Xhead	->  u  Y		{ u }
+		->  /* empty */		{ follow(Xhead ) }
+					{ = first( Xtail ) U follow( Xtail ) }
+					{ s , r , |- }
+
+    Xtail	->  s  Y   Xtail	{ s }
+		->  /* empty */		{ follow( Xtail )   }
+					{ = follow( X )     }
+					{ = follow( Shead ) }
+					{ = first( Stail )  }
+					{ r , |- }
+
+    Y		->  u  Y		{ u }
+		->  t			{ t }
+
+3.  Optimizations include
+
+    Line	Optimization
+     42		Tail recursion elimination
+     70	        Inline expansion of lz, constant folding
+     74		Common sub expression R[J] subscript
+     75		Inline expansion of lz
+
+    A complete solution had to show the detailed optimizations
+
+4.  Algorithm 1 assumed that substructure was ignored,  The
+    lecture said that this Algorithm should be applied one level
+    at a time, depth first for language like C.
+
+    Since the question was a bit unclear, two solutions were accepted, 
+    with and without substructure considerations
+
+    In the layouts below, each character represents one byte.
+    * stands for fill, Overall structure has an alignment 
+    factor of 64.  ^ marks addresses aligned mod 64
+
+    No substructure
+
+    C***XXXXYYYYYYYYIIIIJJJJD*EE****FFFFFFFFKKKK
+    ^       ^       ^       ^       ^       ^
+
+    With substructure
+
+    C*******XXXX****YYYYYYYYIIIIJJJJD*EE****FFFFFFFFKKKK
+    ^       ^       ^       ^       ^       ^       ^
+5a. Note that the question only asked about string *storage*
+    i.e. how the string data type would be represented in 
+    memory.  A solution had to be sufficient for implementing
+    string operations, string variables and strings as parameters.
+
+    - set a implementation specified maximum length for strings.
+      for example  32767
+    - a string with a declared maximum lenght of DECLARED_MAX 
+      is represented in memory as a data structure
+
+      struct aString{
+		const short maxLength  = DECLARED_MAX ;
+	              short currentLength ;
+                      char  value[DECLARED_MAX] ;
+      }
+
+      Dynamic storage for strings is implemented using one
+      level of indirection.  Space for a pointer to a string
+      data structure was allocated at compile time.  At run time
+      storage is allocated for the actual string at the top of
+      the activation record and the pointer is set to its address.
+
+5b.   This is a fairly ugly language feature, it makes optimization
+      on strings much harder.  It requires a lot of string copying
+      to fit the value being assigned in to the hole and has a lot 
+      of strange special cases (e.g. assigning a string onto itself).
+
+      Run time checks (assume zero-origin string addressing)
+      - check that location defined by E1 and E2 is legal
+        0 <= E1  and  E1 + E2 <= maxLength
+      - check that value being assigned will fit
+         E1 + length( assignee ) <= maxLength
+
+6.  Any four *distinct* instructions with a good justification
+    were acceptable for full marks.  Many answers tried to
+    improve
+	- addressing
+	- boolean expressions
+	- function call/return, parameter passing
+
+7.  A correct answer addressed all three issues
+
+   Implementation Issues
+
+   - makes parameter passing more complicated.
+   - more complicated parsing of parameter lists.
+   - need mechanism for marking missing parameters in IR
+   - need to store default values for parameters somewhere
+
+   Semantic Analysis mechanisms
+   - need to record presence of and value of parameter initializing
+     constants in the compilers symbol table.
+   - need to check that each parameter default value can be assigned
+     to a variable of the parameter type (same check as assignment
+     statement).
+
+   Code Generation mechanisms
+   - need to recognize missing parameters when generating code for
+     routine calls.
+   - need mechanism to extract default values from the symbol table
+     and package them like actual parameters.
+   
+8a. - The compiler will have to contain bit alignment information
+      for all structure fields in its symbol table.
+    - More complicated algorithms will be required to implement the
+      layout of structures containing bit fields
+    - More semantic checking will be required to make sure bit fields
+      are correctly declared.
+
+8b.   copy Y into a register
+      AND the register with the mask  0x01FFF000  to remove A and C
+      shift the register right 12 bits to right justify B
+      store the register into X
+
+8c.   copy X into register R1
+      Shift R1 left 12 bits to position X as B
+      AND R1 with the mask 0x01FFF000 to clip X to 13 bits
+      copy Y into register R2
+      AND R2 with the mask 0xFE000FFF to remove existing B
+      OR  R1 into R2 to add X as new B
+      copy R2 into Y
+
+

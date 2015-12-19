@@ -1,0 +1,15 @@
+begin
+    proc foo()
+    begin
+        integer a
+
+        proc bar()
+        begin
+            a := 2
+        end
+
+        a := 1
+    end
+
+    foo()
+end

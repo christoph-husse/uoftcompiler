@@ -1,0 +1,16 @@
+% S31
+%
+% Check that type of expression or variable is integer
+%
+% variable:arrayname ’[’ expression S31 ’]’
+
+
+begin
+    integer a, b
+    integer c[10]
+
+    a := 1
+    b := 2
+
+    c[a < b] := 3
+end

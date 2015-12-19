@@ -1,0 +1,10 @@
+begin
+	integer a, b
+	a := 3
+	if a = 2
+	then
+		b := 4
+	else
+		b := 1
+	fi
+	

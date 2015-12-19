@@ -1,0 +1,356 @@
+CSC488/2107 Assignment 4
+Term: Winter 2013
+Group: c488h08
+
+
+Expressions
+===========================================================================
+
+This document describes the process of machine code generation for 
+expressions. We first describe how constants will be accesses. Then we move 
+on to scalars and arrays. Finally we talk about arithmetic, comparision and 
+boolean operators. 
+
+We also give detailed examples for each scenario. However, since expressions 
+themselves cannot be used as statements, we only give part of valid 
+statements as examples for brevity. For example, instead of writing 
+`a := 5` we just write `5`.
+
+Constants
+===========================================================================
+
+There are three types of constants: integer constants, boolean constants and 
+text contants. We describe them sequentially.
+
+Integer constants can be easily accessed by pushing them onto 
+the top of the stack.
+
+Example: 
+
+488 code:
+
+    5
+
+Machine instructions:
+
+    PUSH 5
+
+Boolean constants can be handled similarly.
+
+Example: 
+
+488 code:
+
+    true
+
+Machine instructions:
+
+    PUSH MACHINE_TRUE
+
+Text constants consist of a series of characters terminated by a null (`\0`). 
+Since text constants are only used in `put` statements, we build it when and 
+only when we need it by pushing each character and the null. Since the stack 
+for this machine grows from low address to high address, this implementation 
+conforms to the imlementation of `put` statement (which is described in 
+another file).
+
+Example:
+
+488 code:
+
+    put 'hello'
+
+Machine instructions:
+
+    PUSH 'h'
+    PUSH 'e'
+    PUSH 'l'
+    PUSH 'l'
+    PUSH 'o'
+    PUSH '\0'
+    <Call put>
+
+Scalar Variables
+===========================================================================
+
+To access a scalar variable we assume we know the address of the scalar 
+variable. This assumption is valid because a variable's address can be 
+determined from its declaration.
+
+With this assumption a scalar variable can be accessed by pushing the address 
+of it and loading the value at this address.
+
+Example:
+
+Suppose `v` is a scalar variable at address `a`.
+
+488 code:
+
+    v
+
+Machine instructions:
+
+    ADDR 0 a
+    LOAD
+
+Array Elements
+===========================================================================
+
+We assume that we know the beginning address of the array. Again this 
+assumption is valid for the same reason as that for scalar variables.
+
+To access an array element, we have to first evaluate the subscripting 
+expression. After this evaluation is done, the value of the subscripting 
+expression is left on top of the stack. We can use this value as offset 
+into the array to access the corresponding element.
+
+Depending on whether the array element is used as L-value or R-value, we 
+may end up with either the address of the element or the value of the element.
+
+Please read the storage section for more information.
+
+Example:
+
+488 code:
+
+    a[e] := ...
+
+Machine instructions:
+
+    <Recursively evaluate `e`>
+    ADDR 0 a
+    PUSH 1
+    SUB
+    ADD
+    
+488 code:
+
+    ... := a[e]
+
+Machine instructions:
+
+    <Recursively evaluate `e`>
+    ADDR 0 a
+    PUSH 1
+    SUB
+    LOAD
+
+    
+Arithmetic Operators
+===========================================================================
+
+An Arithmetic operator can be implemented by an arithmetic instruction after 
+two recursive evaluations of the operands. The evaluations of an operand 
+will put the value of the operand on the top of the stack. Then the arithmetic 
+instruction applies naturally.
+
+Note that for asymmetric operators, the first operand should be evaluated 
+before the second operand.
+
+Example:
+
+488 code:
+
+    a + b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+    ADD
+
+488 code:
+
+    a - b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+    SUB
+
+488 code:
+
+    a * b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+    MUL
+
+488 code:
+
+    a / b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+    DIV
+
+Boolean Operators
+===========================================================================
+
+Boolean operators can be implemented in the same way as arithmetic operators. 
+But the machine only has boolean OR. So we have to find a way to implement 
+NOT and AND.
+
+An observation is that NOT can be implemented by NEG(SUB(,1)) if we use 0 
+for `false` and 1 for `true`. This is because -(x - 1) = 1 - x. We use the 
+constant 1 as the second value so that we don't have to save a constant in 
+the stack for a long time just for the evaluation of an expression.
+
+Then AND is easy because `a & b = !(!a | !b)`.
+
+Example:
+
+488 code:
+
+    a | b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+    OR
+
+488 code:
+
+    !a
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    PUSH 1
+    SUB
+    NEG
+
+488 code:
+
+    a & b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Apply NOT>
+    <Recursively evaluate `b`>
+    <Apply NOT>
+    OR
+    <Apply NOT>
+
+Note. If we cannot use 0 for `false` and 1 for `true`, we can use a helper 
+function which is preloaded into memory. This function (named `pushTrue`) 
+will push `MACHINE_TRUE` onto stack. Then NOT can be implemented as:
+
+NOT:
+
+    <Push address of the instruction next to NOT (can be calculated statically)>
+    SWAP
+    <Push address of `pushTrue`>
+    BF
+    PUSH 3
+    POPN
+    PUSH MACHINE_FALSE
+
+pushTrue:
+
+    PUSH MACHINE_TRUE
+    SWAP
+    BR
+
+But this is so tedious. So it'd be better if we can use 0 for `false` and 
+1 for `true`.
+
+Comparison Operators
+===========================================================================
+
+Comparison operators can be implemented similarly. But the machine only has 
+EQ and LT comparison instructions. So we must intelligently deal with other 
+cases:
+
+-   `<` (LT) can be implemented by LT.
+
+-   `=` (EQ) can be implemented by EQ.
+
+-   `>` (GT) can be implemented by LT(SWAP()).
+
+-   a `<=` b (LEQ) can be implemented by LT(SUB()). See example below.
+
+-   a `>=` b (GEQ) can be implemented by NOT(SWAP(SUB())). See example below.
+
+-   `!=` (NEQ) can be implemented by EQ(SUB()). See example below.
+
+For a <= b and a >= b, we can subtract 1 from b and a respectively.
+We don't have to worry about b overflowing because range of integer is -32767 to +32767, 
+which means -32768 is intended for spillover. (16 bit 2's complement's actual range is -32768 to 32767).
+
+Example:
+
+488 code:
+
+    a < b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+    LT
+
+488 code:
+
+    a = b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+    EQ
+
+488 code:
+
+    a > b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+    SWAP
+    LT
+
+488 code:
+
+    a <= b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    PUSH 1
+	SUB
+    <Recursively evaluate `b`>
+	LT				% (a - 1) < b
+
+488 code:
+
+    a >= b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+    PUSH 1
+	SUB
+	SWAP
+    LT              % (b - 1) < a
+
+488 code:
+
+    a != b
+
+Machine instructions:
+
+    <Recursively evaluate `a`>
+    <Recursively evaluate `b`>
+	SUB
+	PUSH 0
+    EQ

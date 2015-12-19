@@ -1,0 +1,64 @@
+% G.488
+%
+% Selection sort
+%
+
+begin
+	integer a[-6..8]
+	integer max(integer idx)
+	begin
+		integer i, max
+		i := idx - 1
+		max := a[idx]
+		loop
+			exit when i < -6
+			if a[i] > max then
+				max := a[i]
+				idx := i
+			fi
+			i := i - 1
+		pool
+		result idx
+	end
+	integer i, m, tmp
+
+	a[-6] := 5
+	a[-5] := -7
+	a[-4] := -25
+	a[-3] := -10
+	a[-2] := 31
+	a[-1] := 34
+	a[0] := 46
+	a[1] := 50
+	a[2] := -11
+	a[3] := 16
+	a[4] := 40
+	a[5] := 8
+	a[6] := 16
+	a[7] := -1
+	a[8] := 33
+
+	i := 8
+	loop
+		exit when !(i > -6)
+		m := max(i)
+		put "swapping a[", i, "] with a[", m, "] "
+		put "(", a[i], " <-> ", a[m], ")", skip
+		tmp := a[i]
+		a[i] := a[m]
+		a[m] := tmp
+		i := i - 1
+	pool
+
+	put skip, "Sorted Array:", skip
+	i := -6
+	loop
+		if i >= 9 then
+			exit 1
+		else
+			put "a[", i, "] = ", a[i], skip
+		fi
+		i := i + 1
+	pool
+end
+

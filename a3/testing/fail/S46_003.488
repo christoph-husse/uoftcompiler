@@ -1,0 +1,8 @@
+% S46
+%
+% Check that lower bound is <= upper bound for large bounds that are one apart
+
+begin
+    integer array1[999..998]
+    array1[999] := 5
+end

@@ -1,0 +1,90 @@
+CSC488/2107 Assignment 2
+Term: Winter 2013
+Group: c488h08
+
+
+Part Allocation
+===============
+
+Each person in the group took a section of the grammar and implemented it
+in the .cup file.
+
+c0sunkue: grammar (declaration - bound),
+          error test cases
+c9bukals: grammar (argumentList - variable),
+          conflict debugging
+c2weizhe: grammar (type - input, variablename - procedurename),
+          conflict debugging
+c2shaoyu: grammar (program - scope),
+          test scripting, conflict debugging
+c3hussec: grammar (expression, precedence),
+          conflict debugging
+
+
+Documentation
+=============
+
+Grammar
+
+Most of the grammar is implemented exactly as stated in the course language
+reference grammar, with a few modifications to resolve ambiguities that
+lead to shift/reduce conflicts. Precedence has also been built into our
+grammar without using cup's precedence feature. These modifications are
+described below:
+
+To get a "statement"-list, instead of making the ambigous self-recursion,
+we created a "statements"-NT (nonterminal) which can reduce to either a
+"statement" or a "statements" and a "statement", giving us an unambigous,
+recursive list of statements. This is left-recursion in order to optimize
+for our LR parser, and this pattern is the same for most self-recursions in
+our specification.
+
+We renamed "variablenames" to "variabledecls" since we use this NT only for
+declarations syntactically, and we anticipate that this is the case
+symantically as well. We also merged "variablename" with "variabledecls". 
+
+For "input" the ambiguity can be resolved easily by following the above
+pattern for recursion, but we don't even need a new NT here. Same for
+"arguments", "parameters".
+
+We included the parentheses in "argumentList" and "parameterList" since
+they are not (to be) used without them anyway.
+
+The "expression" adheres to the operator precedence given in the
+specification. It simply uses the algorithm described in the book
+"Compilers Principles Techniques and Tools", chapter 2.2.6 "Precedence of
+Operators". This works by creating groups of rules each with the same
+precedence. Each group has its own NT. Now all groups are sorted
+ascendingly by precedence and the LHS operand is self-recursive, while the
+RHS operand references the next group of higher precedence. The algorithms
+terminates with the atomic NT "operand" which will always be bound to an
+operator as a whole. "operand" basically contains everything in an
+expression that is not an operator.
+
+"operand" now caused trouble, because "variable" and "parametername"
+can resolve to the same NT "identifier", which is ambigous. This is a
+semantic decision and can not be solved with a context-free grammar.
+To resolve this conflict we removed "parametername", because a parameter
+name is a variable, but not vice-versa.
+
+
+Testing
+
+We test for both successful parsing on valid programs and confirm the
+existence of syntax errors when parsing invalid programs. The valid
+programs used were the ones written for assignment 1. We used these to
+debug our parser, and also used the constantly evolving parser to debug our
+test programs. The result is that parsing the assignment 1 programs does
+not result in any syntax errors.
+
+We also created 26 test programs that contained specific classes of
+expected syntax errors that should not be allowed by our parser. These
+included errors such as arrays with no sizes, expressions used as
+statements, and 'if' without a closing 'fi'. Through these tests we
+verified that our grammar at least catches these common mistakes as
+expected.
+
+Our test run results are in testoutput.txt, and our new test programs are
+included in the 'testcase' directory. Our slightly modified assignment 1
+test programs have been omitted from this submission but are available upon
+request.

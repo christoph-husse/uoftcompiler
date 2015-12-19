@@ -1,0 +1,16 @@
+% S30
+%
+% Checks various failure cases where integers are used when booleans 
+% are expected
+
+begin
+	integer a
+	boolean b
+	a := 0
+	loop
+		exit when a
+		a := a + 1
+	pool
+	b := true & 3
+	a := !5
+end

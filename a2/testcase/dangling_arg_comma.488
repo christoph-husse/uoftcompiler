@@ -1,0 +1,14 @@
+begin
+	integer foo(integer x)
+	begin
+		result 5
+	end
+	integer a, b
+	a := 4
+	if a = 2
+	then
+		b := foo(3,)
+	else
+		b := 1
+	fi
+end

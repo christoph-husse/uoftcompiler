@@ -1,0 +1,13 @@
+% S53
+%
+% Check that integer is > 0 and <= number of containing loops
+%
+% 'exit' integer S53 when expression
+
+begin
+    loop
+        loop
+            exit 0 when true
+        pool
+    pool
+end

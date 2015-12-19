@@ -1,0 +1,28 @@
+% S31
+%
+% Check that type of expression or variable is integer
+
+begin
+    integer a, b, c
+    boolean d
+    integer e[8]
+
+    a := 1
+    b := 2
+
+    c := -a
+    c := a + b
+    c := a - b
+    c := a * b
+    c := a / b
+
+    d := a < b
+    d := a <= b
+    d := a > b
+    d := a >= b
+
+    get c
+    put c
+
+    e[a] := b
+end

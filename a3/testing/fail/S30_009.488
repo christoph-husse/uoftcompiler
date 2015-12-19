@@ -1,0 +1,10 @@
+% S30
+%
+% Check that you cannot use const integer as if condition
+
+begin
+	if 5
+	then
+		put "this is wrong"
+	fi
+end

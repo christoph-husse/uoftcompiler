@@ -1,0 +1,38 @@
+% S36
+%
+% Check that type of argument expression matches type of corresponding formal parameter
+
+begin
+    integer a, b
+    boolean c, d
+
+    integer foo1(integer x, integer y)
+    begin
+        result (x + y)
+    end
+
+    integer foo2(boolean x, boolean y)
+    begin
+        result 0
+    end
+
+    boolean bar1(integer x, integer y)
+    begin
+        result (x = y)
+    end
+
+    boolean bar2(boolean x, boolean y)
+    begin
+        result false
+    end
+
+    a := 1
+    b := 2
+    c := true
+    d := false
+
+    a := foo1(a, b)
+    a := foo2(c, d)
+    c := bar1(a, b)
+    c := bar2(c, d)
+end

@@ -1,0 +1,162 @@
+CSC488/2107 Assignment 3
+Term: Winter 2013
+Group: c488h08
+
+
+Test Documentation
+===========================================================================
+
+# File Organization
+
+Positive test cases are put in `testing/pass`.
+Negative test cases are put in `testing/fail`.
+README file is `testing/README.tests`.
+
+
+# Positive test cases
+
+Positive test cases are meant to succeed. There are two kinds of positive
+test cases:
+
+-   `Sxx.488`: These implement the checkings as provided in the
+    documentation on semantics checking. All semantic checking actions are
+    implemented, which is to say, this is a complete checking
+    implementation of what is required.
+
+-   `Txx.488`: These implement other checkings I can think of. They are
+    meant to be supplementary to the `Sxx.488` files.
+
+As the file name suggests, each kind of checking is implemented in the
+corresponding file. Since these test cases are meant to be successful, I
+enrich the files so that they check as many aspects as they can. Therefore
+each file has a relatively larger size than their *fail* conterparts.
+
+
+# Negative test cases
+
+Negative test cases are meant to fail. There are also two kinds of negative
+test cases:
+
+-   `Sxx.yyy.488`: These are the counterparts of the `Sxx.488` positive
+    test cases. Since negative test cases are meant to fail, we must test
+    each aspect separately. So I put different kinds of errors into
+    different files. Similar tests (tests about the same issue) are
+    numbered by `yyy`.
+
+-   `Txx.yyy.488`: These are my own testing extension to try to find more
+    problems than those indicated in the documentation on semantics
+    checking.
+
+
+# Test case listing
+
+The remainder of this README contains a listing of all tests in the testing
+directory. Each *pass* case comes with a one line summary of its purpose.
+Each *fail* case verifies failure scenarios for the corresponding *pass*
+case. Each test case contains its own instructions and comments. Please
+browse each file for details.
+
+.
+├── README.tests - This README file (Global README for testing is doc/README.testing)
+├── pass
+|   ├── A.488 - Our testcases from assignment A1
+|   ├── B.488
+|   ├── C.488
+|   ├── D.488
+|   ├── E.488
+|   ├── S30.488 - Check that type of expression is boolean
+|   ├── S31.488 - Check that type of expression or variable is integer
+|   ├── S32.488 - Check that left and right operand expressions are the same type
+|   ├── S34.488 - Check that variable and expression in assignment are the same type
+|   ├── S35.488 - Check that expression type matches the return type of enclosing function
+|   ├── S36.488 - Check that type of argument expression matches type of corresponding formal parameter
+|   ├── S37.488 - Check that identifier has been declared as a scalar variable
+|   ├── S38.488 - Check that identifier has been declared as an array
+|   ├── S39.488 - Check that identifier has been declared as a parameter
+|   ├── S40.488 - Check that identifier has been declared as a function
+|   ├── S41.488 - Check that identifier has been declared as a procedure
+|   ├── S43.488 - Check that the number of arguments is equal to the number of formal parameters
+|   ├── S46.488 - Check that lower bound is <= upper bound
+|   ├── S49.488 - If function/procedure was declared forward, verify forward declaration matches
+|   ├── S50.488 - Check that exit statement is inside a loop
+|   ├── S51.488 - Check that result is inside a function
+|   ├── S52.488 - Check that return statement is inside a procedure
+|   ├── S53.488 - Check that integer is > 0 and <= number of containing loops
+|   └── T01.488 - Check that there is no variable redefinition
+└── fail
+    ├── S30_001.488
+    ├── S30_002.488
+    ├── S30_003.488
+    ├── S30_004.488
+    ├── S30_005.488
+    ├── S30_006.488
+    ├── S30_007.488
+    ├── S30_008.488
+    ├── S31_001.488
+    ├── S31_002.488
+    ├── S31_003.488
+    ├── S31_004.488
+    ├── S31_005.488
+    ├── S31_006.488
+    ├── S31_007.488
+    ├── S31_008.488
+    ├── S31_009.488
+    ├── S31_010.488
+    ├── S31_011.488
+    ├── S31_012.488
+    ├── S31_013.488
+    ├── S31_014.488
+    ├── S31_015.488
+    ├── S31_016.488
+    ├── S31_017.488
+    ├── S31_018.488
+    ├── S31_019.488
+    ├── S31_020.488
+    ├── S32_001.488
+    ├── S32_002.488
+    ├── S34_001.488
+    ├── S34_002.488
+    ├── S35_001.488
+    ├── S35_002.488
+    ├── S36_001.488
+    ├── S36_002.488
+    ├── S36_003.488
+    ├── S36_004.488
+    ├── S37_001.488
+    ├── S37_002.488
+    ├── S38_001.488
+    ├── S38_002.488
+    ├── S38_003.488
+    ├── S38_004.488
+    ├── S38_005.488
+    ├── S38_006.488
+    ├── S38_007.488
+    ├── S38_008.488
+    ├── S39_001.488
+    ├── S39_002.488
+    ├── S40_001.488
+    ├── S40_002.488
+    ├── S41_001.488
+    ├── S41_002.488
+    ├── S43_001.488
+    ├── S43_002.488
+    ├── S43_003.488
+    ├── S43_004.488
+    ├── S46_001.488
+    ├── S46_002.488
+    ├── S46_003.488
+    ├── S46_004.488
+    ├── S49_001.488
+    ├── S49_002.488
+    ├── S49_003.488
+    ├── S50_001.488
+    ├── S51_001.488
+    ├── S51_002.488
+    ├── S52_001.488
+    ├── S52_002.488
+    ├── S53_001.488
+    ├── S53_002.488
+    ├── S53_003.488
+    ├── S53_004.488
+    ├── T01_001.488
+    └── T01_002.488

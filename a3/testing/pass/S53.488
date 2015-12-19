@@ -1,0 +1,11 @@
+% S53
+%
+% Check that integer is > 0 and <= number of containing loops
+
+begin
+    loop
+        loop
+            exit 2
+        pool
+    pool
+end

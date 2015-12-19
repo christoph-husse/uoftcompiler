@@ -1,0 +1,11 @@
+% S37
+%
+% Check that identifier has been declared as a scalar variable
+
+begin
+    integer a
+    boolean c
+
+    a := 1
+    c := true
+end

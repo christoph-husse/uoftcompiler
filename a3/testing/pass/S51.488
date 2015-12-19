@@ -1,0 +1,14 @@
+% S51
+%
+% Check that result is inside a function
+
+begin
+    integer foo()
+    begin
+        result 0
+    end
+
+    integer a
+
+    a := foo()
+end

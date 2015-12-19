@@ -1,0 +1,185 @@
+CSC488/2107 Assignment 4
+Term: Winter 2013
+Group: c488h08
+
+
+Expressions
+===========================================================================
+
+This document describe the storage of scalar variables, array variables, and
+constants, as well as how they can be accessed (addressed). There will be
+certain overlaps with other documents with regards to how variables and 
+constants are accessed.
+
+We also give detailed examples for each scenario. 
+
+Constants
+===========================================================================
+
+There are three types of constants: integer constants, boolean constants and 
+text contants. We describe them sequentially.
+
+Integer constants can be easily accessed by pushing them onto 
+the top of the stack.
+
+Example: 
+
+488 code:
+
+    5
+
+Machine instructions:
+
+    PUSH 5
+
+Boolean constants can be handled similarly.
+
+Example: 
+
+488 code:
+
+    true
+
+Machine instructions:
+
+    PUSH MACHINE_TRUE
+
+Text constants consist of a series of characters terminated by a null (`\0`). 
+Since text constants are only used in `put` statements, we build it when and 
+only when we need it by pushing each character and calling PRINTC. 
+This way, we do not need to store the text constants in a separate location.
+
+Example:
+
+488 code:
+
+    put 'hello ', 5, skip
+
+Machine instructions:
+
+    PUSH 'h'
+    PRINTC 
+    PUSH 'e'
+    PRINTC
+    PUSH 'l'
+    PRINTC
+    PUSH 'l'
+    PRINTC
+    PUSH 'o'
+    PRINTC
+    PUSH ' '
+    PRINTC 
+    PUSH 5
+    PRINTI
+    PUSH '\n'
+    PRINTC
+    PUSH '\0'
+    PRINTC
+
+Variable Storage
+===========================================================================
+
+Since declarations always occur before statements, we allocate space for 
+all declarations at the beginning of each scope. All scalar variables take
+up 1 word, and array variables take up N words, where N is its size.
+
+Example:
+
+begin
+    % c[5] takes up 5 words
+    integer a, b, c[5]
+    % ...
+end
+
+PUSHMT		<-- push address of stack pointer
+SETD 0		<-- set display[0] to point to bottom of stack where our local vars are
+PUSH 0		<-- default value is 0
+PUSH 7      <-- a total of 7 words needs to be reserved.
+DUPN	    <-- move stack up by 7 words (zero-filled)
+
+To unwind the stack at the end of a scope, we pop off all local variables
+
+PUSH 7		% 7 words in local variable
+POPN
+
+With this assumption a scalar variable can be accessed by pushing the address 
+of display[0] with the known offset and loading the value at this address.
+display[0] is effectively our frame pointer.
+
+Example:
+
+488 code:
+
+a
+
+Machine instructions:
+
+ADDR 0 0	<-- push address of a
+LOAD        	<-- load value of a
+
+To keep track of each variable's address, we will have a new setOffset()
+and getOffset() function for each declaration.
+
+The order in which variables are declared will determine where it lies in with
+respect to the frame pointer. Parameters are treated as variables and will 
+precede local variables.
+
+Array Element Access
+===========================================================================
+
+To access an array element, we have to first evaluate the subscripting 
+expression. After this evaluation is done, the value of the subscripting 
+expression is left on top of the stack. We can use this value as offset 
+into the array to access the corresponding element after we transform the
+subscript into a C-like index.
+
+Depending on whether the array is declared as A[size] or A[min..max], we 
+perform different transformations to obtain the actual index.
+
+Example:
+
+488 code:
+
+begin
+    integer a[5]    % valid subscript is 1 -> 5, but valid index is 0 -> 4
+    a[2] := 3       % machine instruction for this statement shown below
+end
+
+Machine instructions:
+
+ADDR 0 0    <-- push address of a
+PUSH 2      <-- push subscript expression (integer constant 2)
+ADD          <-- subscript to a[2]
+PUSH 1      <-- but the actual index is always 1 off, so we push constant 1
+SUB          <-- and subtract it from the subscript to get the real offset
+
+PUSH 3      <-- push integer constant 3
+STORE       <-- store 3 into a[2]
+
+488 code:
+
+begin
+    integer a[-3..5]    % valid subscript is -3 -> 5, a total of 9 words
+    a[0] := 4
+end
+
+Machine instructions:
+
+PUSHMT      <-- push address of stack pointer
+SETD 0		 <-- setup our frame pointer display[0]
+PUSH 0		<-- default value is 0
+PUSH 9       <-- a total of 9 words needs to be reserved for a[-3..5]
+DUPN			<-- move stack up by 9 words (zero-filled)
+
+ADDR 0 0      <-- push address of a (addr is display[0] + 0)
+PUSH 0        <-- push subscript expression (integer constant 0)   
+ADD
+PUSH -3       <-- push minimum subscript and subtract it from current index
+SUB             <-- this will get us the address 3, which is is the 4th element
+
+PUSH 4        <-- push integer constant 4
+STORE         <-- store 4 into a[0]
+
+Please note that we do not attempt dynamic checking of array index out of 
+bound. This can be left as future work.
+

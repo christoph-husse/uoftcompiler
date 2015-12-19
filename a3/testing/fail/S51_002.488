@@ -1,0 +1,12 @@
+% S51
+%
+% Check that result is inside a function
+
+begin
+    proc foo()
+    begin
+        result 0
+    end
+
+    foo()
+end

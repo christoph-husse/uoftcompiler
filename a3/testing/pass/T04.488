@@ -1,0 +1,16 @@
+% T04
+% 
+% testing S30
+
+begin
+	boolean a, b, c
+	b := true
+	c := true
+	if b & c
+	then
+		a := b | c
+	else
+		a := !b
+	fi
+end
+

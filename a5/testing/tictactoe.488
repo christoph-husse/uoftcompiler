@@ -1,0 +1,117 @@
+% I.488
+%
+% Tic-Tac-Toe (Cannot be tested by C++)
+
+begin
+	boolean board[9]	% empty or not
+	boolean xo[9]		% x or o
+	forward proc print_xo(boolean xo)
+	proc print_piece(integer idx)
+	begin
+		if board[idx] then
+			print_xo(xo[idx])
+		else
+			put " "
+		fi
+	end
+	proc print_xo(boolean xo)
+	begin
+		if !xo then
+			put "X"
+		else
+			put "O"
+		fi
+	end
+	proc print_board()
+	begin
+		integer i, j
+		put "----------", skip
+		i := 0
+		loop
+			j := i*3 + 1
+			put "|"
+			loop
+				put j, " |"
+				j := j + 1
+				exit when j > (i+1)*3
+			pool
+			j := i*3 + 1
+			put skip, "|"
+			loop
+				put " "
+				print_piece(j)
+				put "|"
+				j := j + 1
+				exit when j > (i+1)*3
+			pool
+			put skip, "----------", skip
+			exit when i >= 2
+			i := i + 1
+		pool
+	end
+	boolean is_win()
+	begin
+		boolean win(integer xi, integer yi, integer start)
+		begin
+			integer i, j, a
+			boolean can_win
+			i := start
+			loop
+				a := i
+				j := i
+				can_win := true
+				loop
+					if !board[j] then
+						can_win := false
+						exit
+					fi
+					exit when j >= (a + xi*2)
+					j := j + xi
+				pool
+				if can_win & xo[a] = xo[a+xi] & xo[a] = xo[a+xi*2] then
+					result true
+				fi
+				i := i + yi
+				exit when i > 9
+			pool
+			result false
+		end
+		result win(1, 3, 1) | win(3, 1, 1) | win(4, 9, 1) | win(2, 9, 3)
+	end
+	boolean who
+	integer count, square
+	
+	count := 0
+	loop % dummy loop for short exit
+		loop
+			exit when count >= 9
+			print_board()
+			loop
+				put "Make your move Mr. "
+				print_xo(who)
+				put skip, "> "
+				get square
+				if square <= 0 | square > 9 | board[square] then
+					put "Invalid move ", square, skip
+				else
+					exit
+				fi
+			pool
+			board[square] := true
+			xo[square] := who
+			if is_win() then
+				print_board()
+				put "Mr. "
+				print_xo(who)
+				put " Won", skip
+				exit 2
+			fi
+			count := count + 1
+			who := !who
+		pool
+		print_board()
+		put "Mr. X and Mr. O tied", skip
+		exit
+	pool
+end
+

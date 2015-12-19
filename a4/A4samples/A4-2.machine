@@ -1,0 +1,288 @@
+% 2-2 . . . 2-4
+PUSHMT              % Push stack pointer
+SETD 0              % Set frame pointer (display[o]) to msp
+
+PUSH 0              % Default value is 0
+PUSH 19             % Need 19 words for local variables
+DUPN                % Move sp forward by allocation space
+
+% 2-5
+ADDR 0 0            % Address of a
+ADDR 0 1            % Address of b
+LOAD                % Load value of b
+ADDR 0 2            % Address of c
+LOAD                % Load value of c
+ADD                 % b + c
+ADDR 0 3            % Address of d
+LOAD                % Load value of d
+ADDR 0 2            % Address of c
+LOAD                % Load value of c
+MUL                 % d * c
+SUB                 % b + c - d * c
+ADDR 0 1            % Address of b
+LOAD                % Load value of b
+ADDR 0 4            % Address of e
+PUSH -3             % Push constant -3
+ADD                 % Decrement base address of e by 3
+PUSH 5              % Push constant 5
+ADD                 % Increment address by 5 to account for negative indices
+LOAD                % Load value of e[-3]
+DIV                 % b / e[-3]
+ADD                 % b + c - d * c + b / e[-3]
+STORE               % Store b + c - d * c + b / e[-3] in a
+
+% 2-6
+ADDR 0 15           % Address of p
+PUSH MACHINE_TRUE   % !False
+ADDR 0 16           % Address of q
+LOAD                % Load the value of q
+PUSH 1              % Push 1 and subtract. See templateExpressions.txt
+SUB
+NEG                 % !q
+ADDR 0 17           % Address of r
+LOAD                % Load the value of r
+PUSH 1              % Push 1 and subtract. See templateExpressions.txt
+SUB
+NEG                 % !r
+OR                  % !q | !r <=> !(q & r) by DeMorgan's Law
+OR                  % !False | ! q & r
+STORE               % Store !False | ! q & r in p
+
+% 2-7
+ADDR 0 15           % Address of p
+LOAD                % Load the value of p
+ADDR 0 15           % Address of p
+LOAD                % Load the value of p
+PUSH 1              % Push 1 and subtract. See templateExpressions.txt
+SUB
+NEG                 % !p
+OR                  % p | !p
+PUSH 93             % Push end of code address
+BF                  % Branch to else if expression is false
+ADDR 0 1            % Address of b
+PUSH 2              % Push constant 2
+STORE               % Store 2 in b
+
+% 2-8 . . . 2-12
+ADDR 0 15           % Address of p
+LOAD                % Load the value of p
+ADDR 0 18           % Address of np
+LOAD                % Load the value of np
+EQ                  % p = np
+PUSH 138            % Push the else block address
+BF
+PUSH 89             % Print 'Y'
+PRINTC
+PUSH 101            % Print 'e'
+PRINTC
+PUSH 115            % Print 's'
+PRINTC
+PUSH 32             % Print ' '
+PRINTC
+PUSH 83             % Print 'S'
+PRINTC
+PUSH 116            % Print 't'
+PRINTC
+PUSH 101            % Print 'e'
+PRINTC
+PUSH 118            % Print 'v'
+PRINTC
+PUSH 101            % Print 'e'
+PRINTC
+PUSH 10             % Print '\n'
+PRINTC
+PUSH 165            % Push end of code address
+BR                  % Branch out of if block
+PUSH 78             % Print 'N'
+PRINTC
+PUSH 111            % Print 'o'
+PRINTC
+PUSH 32             % Print ' '
+PRINTC
+PUSH 83             % Print 'S'
+PRINTC
+PUSH 116            % Print 't'
+PRINTC
+PUSH 101            % Print 'e'
+PRINTC
+PUSH 118            % Print 'v'
+PRINTC
+PUSH 101            % Print 'e'
+PRINTC
+PUSH 10             % Print '\n'
+PRINTC
+
+% 2-13 . . . 2-16
+ADDR 0 2            % Address of c
+LOAD                % Load the value of c
+PUSH 7              % Push constant 7
+LT
+PUSH 178            % Push end of exit address
+BF                  % Branch past exit statement if expression is false
+PUSH 190            % Push end of loop address
+BR                  % Branch out of loop
+ADDR 0 2            % Address of c
+DUP
+LOAD                % Load the value of c
+PUSH 1              % Push constant 1
+ADD                 % c + 1
+STORE               % Store c + 1 in c
+PUSH 165            % Push start of code address
+BR
+
+% 2-17 . . . 2-24
+% outer/inner loops start here
+ADDR 0 2            % Address of c
+LOAD                % Load the value of c
+PUSH 7              % Push constant 7
+SWAP
+LT
+PUSH 204            % Push end of exit address
+BF                  % Branch past exit statement if expression is false
+PUSH 231            % Push end of outer loop address
+BR                  % Branch out of loop
+% 2-20
+ADDR 0 2            % Address of c
+DUP
+LOAD                % Load the value of c
+PUSH 1              % Push constant 1
+ADD                 % c + 1
+STORE               % Store c + 1 in c
+% 2-21
+ADDR 0 15           % Address of p
+PUSH 222            % Push end of code address
+BF                  % Branch out of if block
+PUSH 225            % Push end of inner loop address
+BR                  % Branch out of loop
+% end of inner loop
+PUSH 190            % Push start of inner loop address
+BR                  % Branch to start of loop
+% 2-23
+PUSH 231            % Push end of outer loop address
+BR                  % Branch out of outer loop
+% end of outer loop
+PUSH 190            % Push start of inner loop address
+BR                  % Branch to start of loop
+
+% 2-25
+PUSH 86             % Print 'V'
+PRINTC
+PUSH 97             % Print 'a'
+PRINTC
+PUSH 108            % Print 'l'
+PRINTC
+PUSH 117            % Print 'u'
+PRINTC
+PUSH 101            % Print 'e'
+PRINTC
+PUSH 32             % Print ' '
+PRINTC
+PUSH 105            % Print 'i'
+PRINTC
+PUSH 115            % Print 's'
+PRINTC
+PUSH 32             % Print ' '
+PRINTC
+ADDR 0 0            % Address of a
+LOAD                % Load the value of a
+ADDR 0 1            % Address of b
+LOAD                % Load the value of b
+DIV                 % a / b
+PRINTI              % Print a / b
+PUSH 32             % Print ' '
+PRINTC
+PUSH 111            % Print 'o'
+PRINTC
+PUSH 114            % Print 'r'
+PRINTC
+PUSH 32             % Print ' '
+PRINTC
+PUSH 110            % Print 'n'
+PRINTC
+PUSH 111            % Print 'o'
+PRINTC
+PUSH 116            % Print 't'
+PRINTC
+PUSH 32             % Print ' '
+PRINTC
+PUSH 10             % Print '\n'
+PRINTC
+
+% 2-26
+ADDR 0 0            % Address of a
+READI               % Read from standard input
+STORE               % Store the input in a
+ADDR 0 2            % Address of c
+READI               % Read from standard input
+STORE               % Store the input in c
+ADDR 0 1            % Address of b
+READI               % Read from standard input
+STORE               % Store the input in b
+ADDR 0 4            % Address of e
+ADDR 0 1            % Address of b
+LOAD                % Load the value of b
+ADD                 % Increment base address of e by b
+PUSH 5              % Push constant 5
+ADD                 % Increment address by 5 to account for negative indices
+READI               % Read from standard input
+STORE               % Store the input in e[b]
+
+% 2-27, 2-28
+PUSHMT              % Push stack pointer
+SETD 1              % Set frame pointer (display[1]) to msp
+
+PUSH 0              % Default value is 0
+PUSH 3              % Need 3 words for local variables
+DUPN                % Move sp forward by allocation space
+
+% 2-29
+ADDR 1 2            % Address of c
+ADDR 0 15           % Address of p
+LOAD                % Load the value of p
+ADDR 0 16           % Address of q
+LOAD                % Load the value of q
+OR                  % p | q
+PUSH 1              % Push 1 and subtract. See templateExpressions.txt
+SUB 
+NEG                 % ! p | q
+STORE               % Store ! p | q in c
+
+% 2-30, 2-31
+PUSHMT              % Push stack pointer
+SETD 2              % Set frame pointer (display[2]) to msp
+
+PUSH 0              % Default value is 0
+PUSH 3              % Need 3 words for local variables
+DUPN                % Move sp forward by allocation space
+
+% 3-32
+ADDR 1 2            % Address of c
+LOAD                % Load the value of c
+PUSH 374            % Push the else block address
+BF                  % Branch to else if expression is false
+ADDR 2 2            % Address of r
+ADDR 0 3            % Address of d
+LOAD                % Load the value of d
+STORE               % Store d in r
+PUSH 388            % Push end of if block address
+BR                  % Branch out of if block
+ADDR 2 0            % Address of p
+ADDR 0 4            % Address of e
+PUSH 3              % Push constant 3
+ADD                 % Increment base address of e by 3
+PUSH 5              % Push constant 5
+ADD                 % Increment address by 5 to account for negative indices
+LOAD                % Load the value of e[5]
+STORE               % Store e[5] in p
+
+% 2-33
+PUSH 3              % A total of 3 words reserved for local variables at LL2
+POPN                % Deallocate by unwinding the stack
+
+% 2-34
+PUSH 3              % A total of 3 words reserved for local variables at LL1
+POPN                % Deallocate by unwinding the stack
+
+% 2-35
+PUSH 19             % A total of 19 words reserved for local variables at LL0
+POPN                % Deallocate by unwinding the stack

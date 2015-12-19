@@ -1,0 +1,19 @@
+% S49
+%
+% If function/procedure was declared forward, verify forward declaration matches
+
+begin
+    forward proc bar(integer a)
+
+    proc bar(integer a, integer b)
+    begin
+        return
+    end
+
+    integer a, b
+    
+    a := 1
+    b := 2
+
+    bar(a, b)
+end

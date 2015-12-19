@@ -1,0 +1,32 @@
+CSC488/2107 Assignment 3
+Term: Winter 2013
+Group: c488h08
+
+
+Semantic Analysis Documentation
+===========================================================================
+
+Semantic analysis is done using semantics visitors under the visitor design
+pattern. A semantic analysis visitor visits the nodes of the Abstract
+Syntax Tree starting from the root, in a depth-first traversal. At each
+node, it has access to all of that node's information and can access the
+parent, siblings and local symbol table if necessary.
+
+All of our semantic checks are independent of one another. This means that
+they do not need to be implemented in a single visitor. To make it easy to
+divide the semantic checks among multiple group members to implement, each
+person has their own visitor under src/compiler488/semantics/ where that
+individual implements their checks including error reporting code. Since
+the checks are independent, they can easily be integrated into a single
+visitor or grouped in different ways to make the code easier to read.
+
+The semantic checks are implemented in the semantic visitor classes as
+follows:
+
+semantics/
+├── Semantics_Chris.java  - S49, S50, S53
+├── Semantics_Cloud.java  - Declarations
+├── Semantics_Jack.java   - Expression Types, Expression Type Checking
+└── Semantics_Steven.java - Scopes and Program, S51, S52, Functions,
+                            Procedures and Arguments
+

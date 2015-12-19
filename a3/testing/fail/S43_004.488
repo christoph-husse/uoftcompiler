@@ -1,0 +1,18 @@
+% S43
+%
+% Check that the number of arguments is equal to the number of formal parameters
+
+begin
+    proc foo(integer a, integer b)
+    begin
+        result 0
+    end
+
+    integer x, y, z
+
+    x := 1
+    y := 2
+    z := 3
+
+    foo(x, y, z)
+end

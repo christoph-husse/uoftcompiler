@@ -1,0 +1,16 @@
+% S30
+%
+% Check that type of expression is boolean
+%
+% expression: expression S30 '&' expression
+
+begin
+    integer a, b
+    boolean c
+
+    a := 0
+    b := 0
+    c := false
+
+    c := a & c
+end
